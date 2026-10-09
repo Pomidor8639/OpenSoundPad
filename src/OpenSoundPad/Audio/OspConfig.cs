@@ -24,6 +24,8 @@ public sealed class OspConfig
     public float InputPregain { get; set; } = 2.2f;
     public float GateThreshold { get; set; } = 0.003f;
     public string Language { get; set; } = "ru";
+    public string Mode { get; set; } = "voicemod";
+    public List<string> PadList { get; set; } = new();
     public Dictionary<string, string> PadFiles { get; set; } = new();
 
     public static string GetFilePath()
@@ -54,7 +56,21 @@ public sealed class OspConfig
             try
             {
                 var cfg = JsonSerializer.Deserialize<OspConfig>(File.ReadAllText(path));
-                if (cfg != null) return cfg;
+                if (cfg != null)
+                {
+                    if (cfg.PadList.Count == 0 && cfg.PadFiles.Count > 0)
+                    {
+                        var sorted = new List<KeyValuePair<int, string>>();
+                        foreach (var kv in cfg.PadFiles)
+                            if (int.TryParse(kv.Key, out int idx))
+                                sorted.Add(new KeyValuePair<int, string>(idx, kv.Value));
+                        sorted.Sort((a, b) => a.Key.CompareTo(b.Key));
+                        foreach (var item in sorted)
+                            if (!string.IsNullOrEmpty(item.Value) && File.Exists(item.Value))
+                                cfg.PadList.Add(item.Value);
+                    }
+                    return cfg;
+                }
             }
             catch { /* битый конфиг — пробуем legacy */ }
         }
@@ -89,6 +105,10 @@ public sealed class OspConfig
     {
         try
         {
+            PadFiles.Clear();
+            for (int i = 0; i < PadList.Count; i++)
+                PadFiles[i.ToString()] = PadList[i];
+
             string path = GetFilePath();
             var opts = new JsonSerializerOptions { WriteIndented = true };
             File.WriteAllText(path, JsonSerializer.Serialize(this, opts));

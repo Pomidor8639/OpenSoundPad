@@ -7,80 +7,125 @@ using NAudio.Wave.SampleProviders;
 namespace OpenSoundPad.Audio;
 
 /// <summary>
-/// Саундпад: банк сэмплов с полифонией. Сэмплы заранее декодируются во float-mono 48k,
-/// в аудиоколбэке только MixInto без аллокаций/IO.
+/// Саундпад: динамический банк сэмплов с полифонией.
+/// Сэмплы декодируются во float-mono 48k при добавлении.
+/// Воспроизведение полифоническое без блокировок ввода/вывода.
 /// </summary>
 public sealed class SoundPadBank
 {
-    public const int PadCount = 12;
     public float MasterGain = 1.0f;
 
     private readonly object _sync = new();
-    private readonly Pad[] _pads = new Pad[PadCount];
+    private readonly List<Pad> _pads = new();
     private int _sampleRate = 48000;
 
-    public SoundPadBank()
+    public int PadCount
     {
-        for (int i = 0; i < PadCount; i++) _pads[i] = new Pad();
+        get { lock (_sync) return _pads.Count; }
     }
 
     public void SetSampleRate(int rate) => _sampleRate = rate;
 
-    public string? GetPadFile(int index) { lock (_sync) return _pads[index].FilePath; }
+    public string? GetPadFile(int index)
+    {
+        lock (_sync)
+        {
+            if (index < 0 || index >= _pads.Count) return null;
+            return _pads[index].FilePath;
+        }
+    }
+
     public string GetPadName(int index)
     {
         lock (_sync)
         {
+            if (index < 0 || index >= _pads.Count) return $"Pad {index + 1}";
             var p = _pads[index];
             if (p.Samples == null) return $"Pad {index + 1}";
             return Path.GetFileNameWithoutExtension(p.FilePath ?? $"Pad {index + 1}");
         }
     }
 
-    public float GetPadGain(int index) { lock (_sync) return _pads[index].Gain; }
-    public void SetPadGain(int index, float gain) { lock (_sync) _pads[index].Gain = Math.Clamp(gain, 0f, 2f); }
+    public float GetPadGain(int index)
+    {
+        lock (_sync)
+        {
+            if (index < 0 || index >= _pads.Count) return 1.0f;
+            return _pads[index].Gain;
+        }
+    }
+
+    public void SetPadGain(int index, float gain)
+    {
+        lock (_sync)
+        {
+            if (index >= 0 && index < _pads.Count)
+                _pads[index].Gain = Math.Clamp(gain, 0f, 2f);
+        }
+    }
 
     public TimeSpan? GetPadDuration(int index)
     {
         lock (_sync)
         {
+            if (index < 0 || index >= _pads.Count) return null;
             var s = _pads[index].Samples;
             if (s == null || _sampleRate <= 0) return null;
             return TimeSpan.FromSeconds((double)s.Length / _sampleRate);
         }
     }
 
+    public int AddPad(string filePath)
+    {
+        var pad = DecodeFile(filePath);
+        if (pad == null) return -1;
+        lock (_sync)
+        {
+            _pads.Add(pad);
+            return _pads.Count - 1;
+        }
+    }
+
     public bool LoadPad(int index, string filePath)
     {
-        try
+        var pad = DecodeFile(filePath);
+        if (pad == null) return false;
+        lock (_sync)
         {
-            using var reader = new AudioFileReader(filePath);
-            var resampler = new WdlResamplingSampleProvider(reader, _sampleRate);
-            var mono = resampler.ToMono();
-            var data = new List<float>(1 << 20);
-            float[] buf = new float[8192];
-            int read;
-            while ((read = mono.Read(buf, 0, buf.Length)) > 0)
-                for (int i = 0; i < read; i++) data.Add(Math.Clamp(buf[i], -1f, 1f));
-            if (data.Count == 0) return false;
-            lock (_sync)
+            if (index >= 0 && index < _pads.Count)
             {
-                _pads[index].Samples = data.ToArray();
-                _pads[index].FilePath = filePath;
-                _pads[index].Voices.Clear();
+                _pads[index] = pad;
+                return true;
             }
+            else if (index == _pads.Count)
+            {
+                _pads.Add(pad);
+                return true;
+            }
+            return false;
+        }
+    }
+
+    public bool RemovePad(int index)
+    {
+        lock (_sync)
+        {
+            if (index < 0 || index >= _pads.Count) return false;
+            _pads.RemoveAt(index);
             return true;
         }
-        catch { return false; }
     }
 
     public void ClearPad(int index)
     {
+        RemovePad(index);
+    }
+
+    public void ClearAll()
+    {
         lock (_sync)
         {
-            _pads[index].Samples = null;
-            _pads[index].FilePath = null;
-            _pads[index].Voices.Clear();
+            _pads.Clear();
         }
     }
 
@@ -88,17 +133,47 @@ public sealed class SoundPadBank
     {
         lock (_sync)
         {
+            if (index < 0 || index >= _pads.Count) return;
             var p = _pads[index];
             if (p.Samples == null) return;
-            // retrigger: максимум 4 войса на пад
             if (p.Voices.Count >= 4) p.Voices.RemoveAt(0);
             p.Voices.Add(new Voice { Pos = 0 });
         }
     }
 
+    public bool HasPad(int index)
+    {
+        lock (_sync)
+        {
+            if (index < 0 || index >= _pads.Count) return false;
+            return _pads[index].Samples != null;
+        }
+    }
+
+    public bool IsPadPlaying(int index)
+    {
+        lock (_sync)
+        {
+            if (index < 0 || index >= _pads.Count) return false;
+            return _pads[index].Voices.Count > 0;
+        }
+    }
+
+    public void StopPad(int index)
+    {
+        lock (_sync)
+        {
+            if (index >= 0 && index < _pads.Count)
+                _pads[index].Voices.Clear();
+        }
+    }
+
     public void StopAll()
     {
-        lock (_sync) foreach (var p in _pads) p.Voices.Clear();
+        lock (_sync)
+        {
+            foreach (var p in _pads) p.Voices.Clear();
+        }
     }
 
     public void MixInto(float[] buffer, int n)
@@ -106,8 +181,9 @@ public sealed class SoundPadBank
         if (MasterGain <= 0.001f) return;
         lock (_sync)
         {
-            foreach (var p in _pads)
+            for (int pIdx = 0; pIdx < _pads.Count; pIdx++)
             {
+                var p = _pads[pIdx];
                 if (p.Samples == null || p.Voices.Count == 0 || p.Gain <= 0.001f) continue;
                 float g = p.Gain * MasterGain;
                 for (int v = p.Voices.Count - 1; v >= 0; v--)
@@ -124,6 +200,31 @@ public sealed class SoundPadBank
             }
         }
         for (int i = 0; i < n; i++) buffer[i] = Math.Clamp(buffer[i], -0.98f, 0.98f);
+    }
+
+    private Pad? DecodeFile(string filePath)
+    {
+        try
+        {
+            using var reader = new AudioFileReader(filePath);
+            var resampler = new WdlResamplingSampleProvider(reader, _sampleRate);
+            var mono = resampler.ToMono();
+            var data = new List<float>(1 << 18);
+            float[] buf = new float[8192];
+            int read;
+            while ((read = mono.Read(buf, 0, buf.Length)) > 0)
+                for (int i = 0; i < read; i++) data.Add(Math.Clamp(buf[i], -1f, 1f));
+            if (data.Count == 0) return null;
+            return new Pad
+            {
+                Samples = data.ToArray(),
+                FilePath = filePath
+            };
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     private sealed class Pad
