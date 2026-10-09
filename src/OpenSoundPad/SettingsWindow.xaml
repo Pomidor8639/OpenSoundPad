@@ -1,44 +1,98 @@
 <Window x:Class="OpenSoundPad.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Настройки — OSP" Height="560" Width="480"
-        Background="#121418" Foreground="#E8EAF0"
-        WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
-    <DockPanel LastChildFill="True">
-        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="14,6,14,14">
-            <Button x:Name="OpenFolderBtn" Content="Открыть папку" Width="120" Click="OpenFolder_Click"/>
-            <Button x:Name="ResetBtn" Content="Сбросить всё" Width="110" Click="Reset_Click"/>
-            <Button Content="OK" Width="90" IsDefault="True" Click="Ok_Click"/>
-        </StackPanel>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="14,14,14,0">
-            <StackPanel>
-                <GroupBox x:Name="DevGroup" Header="Устройства" Margin="0,0,0,8">
+        Title="Настройки — OSP" Height="620" Width="520"
+        MinHeight="540" MinWidth="480"
+        Background="{StaticResource BgWindow}" Foreground="{StaticResource TextPrimary}"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="16" Background="{StaticResource BgWindow}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Margin="0,0,0,14">
+            <StackPanel Margin="0,0,8,0">
+                <!-- Устройства -->
+                <GroupBox x:Name="DevGroup" Header="Аудиоустройства" Margin="0,0,0,10">
                     <StackPanel>
-                        <TextBlock x:Name="MicLabel" Text="Микрофон:" Foreground="#E8EAF0"/>
-                        <ComboBox x:Name="InputBox" DisplayMemberPath="Name" Margin="0,3,0,8"/>
-                        <TextBlock x:Name="CableLabel" Text="Виртуальный кабель:" Foreground="#E8EAF0"/>
-                        <ComboBox x:Name="CableBox" DisplayMemberPath="Name" Margin="0,3,0,8"/>
-                        <TextBlock x:Name="MonLabel" Text="Наушники:" Foreground="#E8EAF0"/>
-                        <ComboBox x:Name="MonitorBox" DisplayMemberPath="Name" Margin="0,3,0,8"/>
-                        <TextBlock x:Name="VirtLabel" Text="Микрофон в системе:"/>
-                        <TextBlock x:Name="VirtMicText" Text="—" Foreground="#3DDC84" TextWrapping="Wrap" Margin="0,0,0,6"/>
-                        <Button x:Name="RefreshBtn" Content="Обновить" Width="110" HorizontalAlignment="Left" Click="RefreshBtn_Click"/>
+                        <TextBlock x:Name="MicLabel" Text="Микрофон (вход):" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,2,0,4"/>
+                        <ComboBox x:Name="InputBox" DisplayMemberPath="Name" Margin="0,0,0,10"/>
+
+                        <TextBlock x:Name="CableLabel" Text="Виртуальный кабель (выход в Discord / игры):" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,2,0,4"/>
+                        <ComboBox x:Name="CableBox" DisplayMemberPath="Name" Margin="0,0,0,10"/>
+
+                        <TextBlock x:Name="MonLabel" Text="Наушники (мониторинг себя):" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,2,0,4"/>
+                        <ComboBox x:Name="MonitorBox" DisplayMemberPath="Name" Margin="0,0,0,10"/>
+
+                        <Border Background="{StaticResource BgDarkest}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="5" Padding="10,8" Margin="0,4,0,10">
+                            <StackPanel>
+                                <TextBlock x:Name="VirtLabel" Text="Микрофон в системе (выбрать в Discord/CS):" Foreground="{StaticResource TextMuted}" FontSize="11"/>
+                                <TextBlock x:Name="VirtMicText" Text="—" Foreground="{StaticResource AccentGreen}" FontWeight="SemiBold" FontSize="12" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Button x:Name="RefreshBtn" HorizontalAlignment="Left" Padding="12,6" Click="RefreshBtn_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="{StaticResource GeoRefresh}" Width="11" Height="11" Style="{StaticResource WhiteIcon}" Margin="0,0,6,0"/>
+                                <TextBlock x:Name="RefreshBtnText" Text="Обновить список устройств" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </GroupBox>
-                <GroupBox x:Name="ParGroup" Header="Параметры" Margin="0,0,0,8">
+
+                <!-- Параметры звука -->
+                <GroupBox x:Name="ParGroup" Header="Обработка звука" Margin="0,0,0,10">
                     <StackPanel>
-                        <TextBlock x:Name="PregainLabel" Text="Предусиление:" Foreground="#E8EAF0"/>
-                        <Slider x:Name="PregainSlider" Minimum="100" Maximum="400" Value="220" Margin="0,2,0,8"/>
-                        <TextBlock x:Name="GateLabel" Text="Шумодав:" Foreground="#E8EAF0"/>
-                        <Slider x:Name="GateSlider" Minimum="0" Maximum="200" Value="30" Margin="0,2,0,4"/>
+                        <DockPanel Margin="0,2,0,4">
+                            <TextBlock x:Name="PregainLabel" Text="Предусиление входа:" Foreground="{StaticResource TextMuted}" FontSize="11"/>
+                        </DockPanel>
+                        <Slider x:Name="PregainSlider" Minimum="100" Maximum="400" Value="220" Margin="0,0,0,12"/>
+
+                        <DockPanel Margin="0,2,0,4">
+                            <TextBlock x:Name="GateLabel" Text="Шумодав (Noise Gate):" Foreground="{StaticResource TextMuted}" FontSize="11"/>
+                        </DockPanel>
+                        <Slider x:Name="GateSlider" Minimum="0" Maximum="200" Value="30" Margin="0,0,0,4"/>
                     </StackPanel>
                 </GroupBox>
-                <GroupBox x:Name="LangGroup" Header="Язык / Language" Margin="0,0,0,8">
+
+                <!-- Язык -->
+                <GroupBox x:Name="LangGroup" Header="Язык / Language" Margin="0,0,0,10">
                     <ComboBox x:Name="LangBox" Margin="0,2" SelectionChanged="LangBox_Changed"/>
                 </GroupBox>
-                <TextBlock x:Name="CfgLabel" Text="Файл настроек:" Foreground="#E8EAF0"/>
-                <TextBlock x:Name="ConfigPathText" Text="—" TextWrapping="Wrap" FontSize="11"/>
+
+                <!-- Инфо о конфигурации -->
+                <Border Background="{StaticResource BgDarkest}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="5" Padding="10,8" Margin="0,4,0,0">
+                    <StackPanel>
+                        <TextBlock x:Name="CfgLabel" Text="Файл настроек:" Foreground="{StaticResource TextSubtle}" FontSize="11"/>
+                        <TextBox x:Name="ConfigPathText" Text="—" IsReadOnly="True" Background="Transparent"
+                                 BorderThickness="0" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,3,0,0"
+                                 TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
             </StackPanel>
         </ScrollViewer>
-    </DockPanel>
+
+        <!-- Нижняя панель действий -->
+        <DockPanel Grid.Row="1" Margin="0,6,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button x:Name="OpenFolderBtn" Padding="10,6" Click="OpenFolder_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="{StaticResource GeoFolder}" Width="12" Height="12" Style="{StaticResource WhiteIcon}" Margin="0,0,6,0"/>
+                        <TextBlock x:Name="OpenFolderBtnText" Text="Папка конфига" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="ResetBtn" Padding="10,6" Margin="6,3,3,3" Click="Reset_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="{StaticResource GeoRefresh}" Width="11" Height="11" Style="{StaticResource WhiteIcon}" Margin="0,0,6,0"/>
+                        <TextBlock x:Name="ResetBtnText" Text="Сбросить всё" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="CancelBtn" Content="Отмена" Width="85" IsCancel="True" Click="Cancel_Click"/>
+                <Button x:Name="OkBtn" Content="Сохранить" Width="95" Margin="6,3,0,3" IsDefault="True" Click="Ok_Click"/>
+            </StackPanel>
+        </DockPanel>
+    </Grid>
 </Window>

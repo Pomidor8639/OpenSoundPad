@@ -9,6 +9,7 @@ namespace OpenSoundPad;
 public partial class SettingsWindow : Window
 {
     private readonly OspConfig _config;
+    private readonly string _initialLang;
     private bool _ready;
 
     public string? SelectedInputId { get; private set; }
@@ -18,6 +19,7 @@ public partial class SettingsWindow : Window
     public SettingsWindow(OspConfig config)
     {
         _config = config;
+        _initialLang = config.Language ?? "ru";
         InitializeComponent();
         ApplyLang();
         RefreshLists();
@@ -49,19 +51,20 @@ public partial class SettingsWindow : Window
         CableLabel.Text = Loc.SetCable;
         MonLabel.Text = Loc.SetMonitor;
         VirtLabel.Text = Loc.SetVirtInSystem;
-        RefreshBtn.Content = "↻ " + Loc.Refresh;
+        RefreshBtnText.Text = Loc.Refresh;
         ParGroup.Header = Loc.SetParams;
         LangGroup.Header = Loc.SetLang == "Язык:" ? "Язык / Language" : "Language / Язык";
         CfgLabel.Text = Loc.SetConfigFile;
-        OpenFolderBtn.Content = Loc.OpenFolder;
-        ResetBtn.Content = Loc.ResetAll;
+        OpenFolderBtnText.Text = Loc.OpenFolder;
+        ResetBtnText.Text = Loc.ResetAll;
+        CancelBtn.Content = Loc.Cancel;
+        OkBtn.Content = Loc.Ok;
     }
 
     private void LangBox_Changed(object sender, SelectionChangedEventArgs e)
     {
         if (!_ready) return;
         Loc.Lang = LangBox.SelectedIndex == 1 ? "en" : "ru";
-        _config.Language = Loc.Lang;
         ApplyLang();
         UpdateParamLabels();
         UpdateVirtMic();
@@ -143,6 +146,13 @@ public partial class SettingsWindow : Window
         UpdateVirtMic();
         PregainSlider.Value = _config.InputPregain * 100;
         GateSlider.Value = _config.GateThreshold * 10000;
+    }
+
+    private void Cancel_Click(object sender, RoutedEventArgs e)
+    {
+        Loc.Lang = _initialLang;
+        DialogResult = false;
+        Close();
     }
 
     private void Ok_Click(object sender, RoutedEventArgs e)

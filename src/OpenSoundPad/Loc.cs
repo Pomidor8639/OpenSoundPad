@@ -18,6 +18,45 @@ public static class Loc
         ? "OSP OpenSoundPad\nVoice changer + soundpad.\nOutput: virtual cable (VB-CABLE / Animaze / Voicemod)."
         : "OSP OpenSoundPad\nВойсчейнджер + саундпад.\nВывод: виртуальный кабель (VB-CABLE / Animaze / Voicemod).";
 
+    // Режимы
+    public static string ModeVoice => En ? "Voice Changer" : "Войсмод";
+    public static string ModePad => En ? "Soundpad" : "Саундпад";
+    public static string VoiceStudio => En ? "Custom Voice Studio" : "Студия кастомного голоса";
+    public static string VoicePresets => En ? "Voice Presets" : "Голосовые пресеты";
+    public static string ResetVoiceParams => En ? "Reset sliders" : "Сбросить параметры";
+    public static string ClearAllPads => En ? "Clear all" : "Очистить всё";
+    public static string ClearAllAsk => En ? "Remove all sounds from the list?" : "Удалить все звуки из списка?";
+    public static string AddSound => En ? "Add sound…" : "Добавить звук…";
+    public static string RemoveSound => En ? "Remove" : "Удалить";
+    public static string PlayingCount(int count) => En ? $"Active: {count}" : $"Играет: {count}";
+    public static string SoundpadRouting => En ? "Routing to Cable:" : "Трансляция в кабель:";
+    public static string SoundpadHint => En
+        ? "Drag & drop audio (.mp3, .wav, .flac, .ogg) or click «Add sound»"
+        : "Перетащите аудио (.mp3, .wav, .flac, .ogg) или нажмите «Добавить звук»";
+    public static string NoSoundsYet => En
+        ? "No sounds yet. Click «+ Add sound» or drag & drop audio files here."
+        : "Звуки пока не добавлены. Нажмите «+ Добавить звук» или перетащите аудиофайлы сюда.";
+    public static string VoiceHotkeysHint => En
+        ? "Keys: 1-5 voice presets, T effect bypass, M mute mic, L monitor"
+        : "Клавиши: 1-5 пресеты, T эффект вкл/выкл, M мут микрофона, L монитор";
+    public static string PadHotkeysHint => En
+        ? "Keys: F1-F12 play pads, Space/Enter play selected, Del remove, Esc stop all"
+        : "Клавиши: F1-F12 запуск, Space/Enter играть выбранный, Del удалить, Esc стоп всех";
+
+    public static string VoiceDesc(int id) => (id, En) switch
+    {
+        (1, false) => "Маскировка тембра, сдвиг -7/-13.5 st, перегруз",
+        (1, true) => "Timbre disguise, multi-layer pitch shift, overdrive",
+        (2, false) => "Формантный сдвиг +3.8 st, осветление",
+        (2, true) => "Formant shift +3.8 st, bright harmonics",
+        (3, false) => "Высокий голос +6.0 st, звонкий",
+        (3, true) => "High pitch +6.0 st, child tone",
+        (4, false) => "Глубокий рык -9/-15.5 st, массивный перегруз",
+        (4, true) => "Deep growl -9/-15.5 st, massive overdrive",
+        (_, false) => "Индивидуальная ручная настройка параметров",
+        (_, true) => "Fully custom parameters",
+    };
+
     // Тулбар
     public static string TbStart => En ? "Start" : "Старт";
     public static string TbStop => En ? "Stop" : "Стоп";
@@ -57,7 +96,7 @@ public static class Loc
 
     // Пады
     public static string Pad(int i) => En ? $"Pad {i}" : $"Пад {i}";
-    public static string ColNum => "#";
+    public static string ColNum => "№";
     public static string ColName => En ? "Name" : "Название";
     public static string ColDur => En ? "Len" : "Длит.";
     public static string ColKey => En ? "Key" : "Клавиша";
@@ -68,14 +107,26 @@ public static class Loc
     public static string LoadFailed => En ? "Could not load file." : "Не удалось загрузить файл.";
     public static string PlayTip => En ? "Double-click / Enter — play. Right-click — load/clear." : "Двойной клик / Enter — играть. Правый клик — загрузить/очистить.";
 
-    // Уровни
+    // Уровни и устройства
     public static string LevelIn => En ? "INPUT (MIC)" : "ВХОД (MIC)";
     public static string LevelOut => En ? "OUTPUT (MOD + pads)" : "ВЫХОД (MOD + пады)";
-    public static string VirtMic => En ? "System mic:" : "Микрофон в системе:";
+    public static string VirtMic => En ? "System mic (for Discord/CS):" : "Микрофон в системе (для Discord/CS):";
     public static string NoCable => En ? "Cable not selected — nothing to output" : "Кабель не выбран — в Discord нечего выводить";
     public static string CableHint => En
         ? "If no cable in list — install VB-CABLE, then pick it in Settings."
         : "Если кабеля нет в списке — установите VB-CABLE и выберите его в настройках.";
+    public static string ActiveDevices => En ? "Active Devices" : "Текущие устройства";
+    public static string SetDevicesBtn => En ? "Configure Devices…" : "Настроить устройства…";
+    public static string MasterVolume(int v) => En ? $"Master mic volume: {v}%" : $"Громкость микрофона: {v}%";
+    public static string NotSelected => En ? "Not selected" : "Не выбрано";
+    public static string MonitorOff => En ? "Disabled" : "Отключено";
+    public static string PlayPad => En ? "Play" : "Играть";
+    public static string StopPad => En ? "Stop" : "Стоп";
+    public static string CustomVoiceHint => En
+        ? "Sliders configure preset 5 (Custom)"
+        : "Ползунки настраивают пресет 5 (Свой)";
+    public static string BadgeLive => En ? "LIVE" : "В ЭФИРЕ";
+    public static string BadgeStopped => En ? "STOPPED" : "ОСТАНОВЛЕН";
 
     // Статус
     public static string Stopped => En ? "Stopped" : "Остановлен";
