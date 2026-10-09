@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,17 +16,19 @@ public partial class MainWindow : Window
     private readonly OspEngine _engine = new();
     private readonly OspConfig _config;
     private readonly DispatcherTimer _vuTimer;
-    private readonly List<Button> _padButtons = new();
-    private bool _updatingUi = true; // true на время InitializeComponent — гасит события XAML-парсера
+    private bool _updatingUi = true;
     private bool _initialized;
 
     public MainWindow()
     {
         InitializeComponent();
         _config = OspConfig.Load();
+        Loc.Lang = _config.Language == "en" ? "en" : "ru";
         ConfigPathText.Text = OspConfig.GetFilePath();
 
-        BuildPadGrid();
+        ApplyLanguage();
+        RefreshVoicesList();
+        RefreshPadList();
         UpdateDeviceDisplay();
         ApplyConfigToUi();
 
@@ -44,52 +46,126 @@ public partial class MainWindow : Window
         _updatingUi = false;
     }
 
-    // ---------- pads ----------
+    // ---------- язык ----------
 
-    private void BuildPadGrid()
+    private void ApplyLanguage()
     {
-        PadGrid.Children.Clear();
-        _padButtons.Clear();
-        for (int i = 0; i < SoundPadBank.PadCount; i++)
-        {
-            int idx = i;
-            var btn = new Button
-            {
-                Content = _engine.Pads.GetPadName(idx),
-                FontSize = 13,
-                MinHeight = 64,
-                Tag = idx,
-                ToolTip = "ЛКМ — играть (или F1..F12). ПКМ — загрузить/очистить.",
-            };
-            btn.Click += (_, _) => _engine.Pads.Trigger(idx);
-            var ctx = new ContextMenu();
-            var load = new MenuItem { Header = "Загрузить звук…" };
-            load.Click += (_, _) => LoadPadFile(idx);
-            var clear = new MenuItem { Header = "Очистить" };
-            clear.Click += (_, _) =>
-            {
-                _engine.Pads.ClearPad(idx);
-                _config.PadFiles.Remove(idx.ToString());
-                _config.Save();
-                RefreshPadNames();
-            };
-            ctx.Items.Add(load);
-            ctx.Items.Add(clear);
-            btn.ContextMenu = ctx;
-            _padButtons.Add(btn);
-            PadGrid.Children.Add(btn);
-        }
-        RefreshPadNames();
+        FileMenu.Header = Loc.MenuFile;
+        MiOpenFolder.Header = Loc.MenuOpenFolder;
+        MiExit.Header = Loc.MenuExit;
+        SettingsMenu.Header = Loc.MenuSettings;
+        MiSettings.Header = Loc.MenuOpenSettings;
+        HelpMenu.Header = Loc.MenuHelp;
+        MiAbout.Header = Loc.MenuAbout;
+
+        TbStart.Content = "▶ " + Loc.TbStart;
+        TbStop.Content = "■ " + Loc.TbStop;
+        UpdateToggleButtons();
+
+        VoicesGroup.Header = Loc.GrVoices;
+        PadsGroup.Header = Loc.GrPads;
+        LevelsGroup.Header = Loc.GrLevels;
+        EffectLabel.Text = Loc.Effect + " ";
+        EffectState.Text = _engine.Dsp.Bypass ? Loc.EffectBypass : Loc.EffectActive;
+        CustomHeader.Text = Loc.CustomVoice;
+        HotkeyHint.Text = Loc.HotkeysHint;
+
+        ColNum.Header = Loc.ColNum;
+        ColName.Header = Loc.ColName;
+        ColDur.Header = Loc.ColDur;
+        ColKey.Header = Loc.ColKey;
+        PadGainLabel.Text = Loc.PadGain;
+        StopPadsBtn.Content = Loc.StopPads;
+        CtxLoad.Header = Loc.LoadSound;
+        CtxClear.Header = Loc.Clear;
+        PadsView.ToolTip = Loc.PlayTip;
+
+        LevelInLabel.Text = Loc.LevelIn;
+        LevelOutLabel.Text = Loc.LevelOut;
+        VirtMicHeader.Text = Loc.VirtMic;
+        CableHint.Text = Loc.CableHint;
+
+        if (!_engine.IsRunning) StatusText.Text = Loc.Stopped;
+        UpdateLabels();
+        RefreshVoicesList();
+        RefreshPadList();
     }
 
-    private void RefreshPadNames()
+    private void UpdateToggleButtons()
     {
-        for (int i = 0; i < _padButtons.Count; i++)
+        TbEffect.Content = _engine.Dsp.Bypass ? Loc.TbEffectOn : Loc.TbEffectOff;
+        TbMute.Content = _engine.Dsp.Muted ? Loc.TbUnmute : Loc.TbMute;
+        TbMonitor.Content = _engine.IsMonitoring ? Loc.TbMonitorOn : Loc.TbMonitor;
+    }
+
+    // ---------- голоса ----------
+
+    private void RefreshVoicesList()
+    {
+        int sel = SelectedVoice() - 1;
+        VoicesBox.Items.Clear();
+        for (int i = 1; i <= 5; i++)
+            VoicesBox.Items.Add($"{i} — {Loc.VoiceName(i)}");
+        VoicesBox.SelectedIndex = Math.Clamp(sel, 0, 4);
+    }
+
+    private int SelectedVoice() => VoicesBox.SelectedIndex is >= 0 and <= 4 ? VoicesBox.SelectedIndex + 1 : 1;
+
+    private void VoicesBox_Changed(object sender, SelectionChangedEventArgs e)
+    {
+        if (!_initialized || _updatingUi || VoicesBox.SelectedIndex < 0) return;
+        int v = VoicesBox.SelectedIndex + 1;
+        _engine.Dsp.SetVoice(v);
+        _config.VoiceId = v;
+        _config.Save();
+        if (_engine.IsRunning && StatusText.Text.Contains('•'))
+            StatusText.Text = StatusText.Text.Split('•')[0].TrimEnd() + $" • {Loc.VoiceName(v)}";
+    }
+
+    // ---------- пады ----------
+
+    private sealed record PadRow(int Num, string Name, string Duration, string Key);
+
+    private void RefreshPadList()
+    {
+        int sel = PadsView.SelectedIndex;
+        PadsView.Items.Clear();
+        for (int i = 0; i < SoundPadBank.PadCount; i++)
         {
             string name = _engine.Pads.GetPadName(i);
-            string key = i < 12 ? $"F{i + 1}" : "";
-            _padButtons[i].Content = $"{i + 1}. {name}\n[{key}]";
+            if (name == $"Pad {i + 1}") name = Loc.Pad(i + 1);
+            var dur = _engine.Pads.GetPadDuration(i);
+            PadsView.Items.Add(new PadRow(
+                i + 1, name,
+                dur.HasValue ? $"{(int)dur.Value.TotalMinutes}:{dur.Value.Seconds:00}" : "—",
+                $"F{i + 1}"));
         }
+        if (sel >= 0 && sel < PadsView.Items.Count) PadsView.SelectedIndex = sel;
+    }
+
+    private int SelectedPad() => PadsView.SelectedIndex is >= 0 and < SoundPadBank.PadCount
+        ? PadsView.SelectedIndex : 0;
+
+    private void PadsView_DoubleClick(object sender, MouseButtonEventArgs e) =>
+        _engine.Pads.Trigger(SelectedPad());
+
+    private void PadsView_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key is Key.Enter or Key.Space)
+        {
+            _engine.Pads.Trigger(SelectedPad());
+            e.Handled = true;
+        }
+    }
+
+    private void CtxLoad_Click(object sender, RoutedEventArgs e) => LoadPadFile(SelectedPad());
+    private void CtxClear_Click(object sender, RoutedEventArgs e)
+    {
+        int idx = SelectedPad();
+        _engine.Pads.ClearPad(idx);
+        _config.PadFiles.Remove(idx.ToString());
+        _config.Save();
+        RefreshPadList();
     }
 
     private void LoadPadFile(int idx)
@@ -97,7 +173,7 @@ public partial class MainWindow : Window
         var dlg = new OpenFileDialog
         {
             Filter = "Audio|*.wav;*.mp3;*.aiff;*.wma;*.m4a;*.ogg;*.flac|All|*.*",
-            Title = $"Звук для пада {idx + 1}",
+            Title = $"{Loc.LoadSound} ({Loc.Pad(idx + 1)})",
         };
         if (dlg.ShowDialog() == true)
         {
@@ -105,63 +181,64 @@ public partial class MainWindow : Window
             {
                 _config.PadFiles[idx.ToString()] = dlg.FileName;
                 _config.Save();
-                RefreshPadNames();
+                RefreshPadList();
             }
-            else MessageBox.Show("Не удалось загрузить файл.", "OSP", MessageBoxButton.OK, MessageBoxImage.Warning);
+            else MessageBox.Show(Loc.LoadFailed, "OSP", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 
-    // ---------- devices (выбор — в окне DevicesWindow) ----------
+    // ---------- устройства (только отображение; выбор — в настройках) ----------
 
-    private static string? FindDeviceName(IEnumerable<OspDevice> list, string? id, string? fallbackContains = null)
+    private static string? FindDeviceName(IEnumerable<OspDevice> list, string? id)
     {
         foreach (var d in list)
             if (d.Id == id) return d.Name;
-        if (fallbackContains != null)
-            foreach (var d in list)
-                if (d.Name.Contains(fallbackContains, StringComparison.OrdinalIgnoreCase)) return d.Name;
         foreach (var d in list) return d.Name;
         return null;
     }
 
     private void UpdateDeviceDisplay()
     {
-        InputName.Text = FindDeviceName(OspEngine.GetInputMicrophones(), _config.InputDeviceId) ?? "Не выбран";
         string? cableName = FindDeviceName(OspEngine.GetVirtualCables(), _config.OutputDeviceId);
-        CableName.Text = cableName ?? "Не выбран";
-        MonitorName.Text = FindDeviceName(OspEngine.GetOutputDevices(), _config.MonitorDeviceId) ?? "Не выбран";
         VirtMicText.Text = cableName != null
             ? OspEngine.FindVirtualMicName(cableName)
-            : "Кабель не выбран — в Discord нечего выводить";
+            : Loc.NoCable;
     }
 
-    private void DevicesBtn_Click(object sender, RoutedEventArgs e)
+    // ---------- меню / тулбар ----------
+
+    private void MiOpenFolder_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            string? dir = Path.GetDirectoryName(OspConfig.GetFilePath());
+            if (dir != null) Process.Start(new ProcessStartInfo("explorer.exe", dir) { UseShellExecute = true });
+        }
+        catch { }
+    }
+
+    private void MiExit_Click(object sender, RoutedEventArgs e) => Close();
+    private void MiSettings_Click(object sender, RoutedEventArgs e) => OpenSettings();
+    private void MiAbout_Click(object sender, RoutedEventArgs e) =>
+        MessageBox.Show(Loc.AboutText, "OSP", MessageBoxButton.OK, MessageBoxImage.Information);
+
+    private void OpenSettings()
     {
         bool wasRunning = _engine.IsRunning;
         if (wasRunning) StopEngine();
-        var dlg = new DevicesWindow(_config.InputDeviceId, _config.OutputDeviceId, _config.MonitorDeviceId)
-        {
-            Owner = this,
-        };
-        if (dlg.ShowDialog() == true)
-        {
-            _config.InputDeviceId = dlg.SelectedInputId;
-            _config.OutputDeviceId = dlg.SelectedOutputId;
-            _config.MonitorDeviceId = dlg.SelectedMonitorId;
-            _config.Save();
-            UpdateDeviceDisplay();
-        }
-    }
-
-    private void SettingsBtn_Click(object sender, RoutedEventArgs e)
-    {
+        string oldLang = Loc.Lang;
         var dlg = new SettingsWindow(_config) { Owner = this };
         if (dlg.ShowDialog() == true)
         {
             _engine.Dsp.InputPregain = _config.InputPregain;
             _engine.Dsp.GateThreshold = _config.GateThreshold;
+            if (Loc.Lang != oldLang) ApplyLanguage();
             ApplyConfigToUi();
             UpdateDeviceDisplay();
+        }
+        else if (Loc.Lang != oldLang)
+        {
+            ApplyLanguage();
         }
     }
 
@@ -183,33 +260,20 @@ public partial class MainWindow : Window
             foreach (var kv in _config.PadFiles)
                 if (int.TryParse(kv.Key, out int idx) && idx is >= 0 and < SoundPadBank.PadCount && File.Exists(kv.Value))
                     _engine.Pads.LoadPad(idx, kv.Value);
-            RefreshPadNames();
-            CheckVoiceRadio(_config.VoiceId);
+            VoicesBox.SelectedIndex = Math.Clamp(_config.VoiceId - 1, 0, 4);
             UpdateLabels();
+            RefreshPadList();
         }
         finally { _updatingUi = false; }
     }
 
-    private void CheckVoiceRadio(int id)
-    {
-        Voice1.IsChecked = id == 1; Voice2.IsChecked = id == 2;
-        Voice3.IsChecked = id == 3; Voice4.IsChecked = id == 4;
-        Voice5.IsChecked = id == 5;
-    }
-
-    private int SelectedVoice() =>
-        Voice2?.IsChecked == true ? 2 :
-        Voice3?.IsChecked == true ? 3 :
-        Voice4?.IsChecked == true ? 4 :
-        Voice5?.IsChecked == true ? 5 : 1;
-
     private void UpdateLabels()
     {
-        VolumeLabel.Text = $"Громкость: {(int)VolumeSlider.Value}%";
-        PitchLabel.Text = $"Питч: {PitchSlider.Value:+0.0;-0.0} st";
-        DriveLabel.Text = $"Дисторшн: {(int)DriveSlider.Value}%";
-        BassLabel.Text = $"Бас: +{BassSlider.Value:0.0} дБ";
-        RobotLabel.Text = $"Робот: {(int)RobotSlider.Value}%";
+        VolumeLabel.Text = Loc.Volume((int)VolumeSlider.Value);
+        PitchLabel.Text = Loc.Pitch(PitchSlider.Value);
+        DriveLabel.Text = Loc.Drive((int)DriveSlider.Value);
+        BassLabel.Text = Loc.Bass(BassSlider.Value);
+        RobotLabel.Text = Loc.Robot((int)RobotSlider.Value);
     }
 
     private void PushParamsToDsp()
@@ -236,9 +300,8 @@ public partial class MainWindow : Window
         {
             if (_config.InputDeviceId == null || _config.OutputDeviceId == null)
             {
-                MessageBox.Show("Выберите микрофон и виртуальный кабель (кнопка «Устройства» вверху).", "OSP",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                DevicesBtn_Click(this, new RoutedEventArgs());
+                MessageBox.Show(Loc.NeedDevices, "OSP", MessageBoxButton.OK, MessageBoxImage.Warning);
+                OpenSettings();
                 if (_config.InputDeviceId == null || _config.OutputDeviceId == null) return;
             }
             _engine.SetDevices(_config.InputDeviceId, _config.OutputDeviceId, _config.MonitorDeviceId);
@@ -253,7 +316,6 @@ public partial class MainWindow : Window
             _config.Save();
 
             _engine.Start();
-            // Применяем сохранённый голос уже на частоте устройства
             _engine.Dsp.SetVoice(SelectedVoice());
             PushParamsToDsp();
             _engine.Dsp.VolumeGain = (float)(VolumeSlider.Value / 100.0);
@@ -262,46 +324,33 @@ public partial class MainWindow : Window
 
             string inName = FindDeviceName(OspEngine.GetInputMicrophones(), _config.InputDeviceId) ?? "?";
             string outName = FindDeviceName(OspEngine.GetVirtualCables(), _config.OutputDeviceId) ?? "?";
-            StartBtn.IsEnabled = false;
-            StopBtn.IsEnabled = true;
-            StatusText.Text = $"В эфире: {inName} → {outName}" +
-                              (OspDsp.Voices.TryGetValue(SelectedVoice(), out var vn) ? $" • {vn}" : "");
+            TbStart.IsEnabled = false;
+            TbStop.IsEnabled = true;
+            StatusText.Text = Loc.Live(inName, outName, Loc.VoiceName(SelectedVoice()));
             UpdateDeviceDisplay();
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Не удалось запустить звук: {ex.Message}", "OSP",
-                MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(Loc.StartFailed + ex.Message, "OSP", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
     private void StopEngine()
     {
         _engine.Stop();
-        StartBtn.IsEnabled = true;
-        StopBtn.IsEnabled = false;
-        StatusText.Text = "Остановлен";
+        TbStart.IsEnabled = true;
+        TbStop.IsEnabled = false;
+        StatusText.Text = Loc.Stopped;
     }
 
     // ---------- voice UI ----------
-
-    private void Voice_Checked(object sender, RoutedEventArgs e)
-    {
-        if (!_initialized || _updatingUi) return;
-        int v = SelectedVoice();
-        _engine.Dsp.SetVoice(v);
-        _config.VoiceId = v;
-        _config.Save();
-        if (OspDsp.Voices.TryGetValue(v, out var name) && _engine.IsRunning)
-            StatusText.Text = StatusText.Text.Split('•')[0].TrimEnd() + $" • {name}";
-    }
 
     private void CustomParam_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
         if (!_initialized || _updatingUi) return;
         UpdateLabels();
         PushParamsToDsp();
-        if (Voice5.IsChecked != true) Voice5.IsChecked = true;
+        if (VoicesBox.SelectedIndex != 4) VoicesBox.SelectedIndex = 4;
         _config.VoiceId = 5;
         _config.Save();
     }
@@ -331,20 +380,20 @@ public partial class MainWindow : Window
     private void ToggleEffect()
     {
         _engine.Dsp.Bypass = !_engine.Dsp.Bypass;
-        EffectState.Text = _engine.Dsp.Bypass ? "ОРИГИНАЛ" : "АКТИВЕН";
-        EffectBtn.Content = _engine.Dsp.Bypass ? "Вкл. эффект (T)" : "Выкл. эффект (T)";
+        EffectState.Text = _engine.Dsp.Bypass ? Loc.EffectBypass : Loc.EffectActive;
+        UpdateToggleButtons();
     }
 
     private void ToggleMute()
     {
         _engine.Dsp.Muted = !_engine.Dsp.Muted;
-        MuteBtn.Content = _engine.Dsp.Muted ? "Анмут (M)" : "Мут (M)";
+        UpdateToggleButtons();
     }
 
     private void ToggleMonitor()
     {
         _engine.SetMonitoring(!_engine.IsMonitoring);
-        MonitorBtn.Content = _engine.IsMonitoring ? "Монитор: ВКЛ (L)" : "Монитор (L)";
+        UpdateToggleButtons();
     }
 
     // ---------- hotkeys ----------
@@ -353,9 +402,7 @@ public partial class MainWindow : Window
     {
         if (e.Key is >= Key.D1 and <= Key.D5)
         {
-            int v = (int)e.Key - (int)Key.D1 + 1;
-            CheckVoiceRadio(v);
-            Voice_Checked(this, new RoutedEventArgs());
+            VoicesBox.SelectedIndex = (int)e.Key - (int)Key.D1;
         }
         else switch (e.Key)
         {

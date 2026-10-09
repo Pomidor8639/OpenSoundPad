@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using OpenSoundPad.Audio;
 
 namespace OpenSoundPad;
@@ -8,20 +9,102 @@ namespace OpenSoundPad;
 public partial class SettingsWindow : Window
 {
     private readonly OspConfig _config;
+    private bool _ready;
+
+    public string? SelectedInputId { get; private set; }
+    public string? SelectedOutputId { get; private set; }
+    public string? SelectedMonitorId { get; private set; }
 
     public SettingsWindow(OspConfig config)
     {
         _config = config;
         InitializeComponent();
-        PregainSlider.Value = _config.InputPregain * 100;
-        GateSlider.Value = _config.GateThreshold * 10000;
+        ApplyLang();
+        RefreshLists();
+        SelectById(InputBox, config.InputDeviceId);
+        SelectById(CableBox, config.OutputDeviceId);
+        SelectById(MonitorBox, config.MonitorDeviceId);
+        CableBox.SelectionChanged += (_, _) => UpdateVirtMic();
+        UpdateVirtMic();
+
+        PregainSlider.Value = config.InputPregain * 100;
+        GateSlider.Value = config.GateThreshold * 10000;
+        UpdateParamLabels();
+        PregainSlider.ValueChanged += (_, _) => UpdateParamLabels();
+        GateSlider.ValueChanged += (_, _) => UpdateParamLabels();
+
+        LangBox.Items.Add("Русский");
+        LangBox.Items.Add("English");
+        LangBox.SelectedIndex = config.Language == "en" ? 1 : 0;
+
         ConfigPathText.Text = OspConfig.GetFilePath();
-        PregainSlider.ValueChanged += (_, _) =>
-            PregainLabel.Text = $"Предусиление входа: x{(PregainSlider.Value / 100):0.0}";
-        GateSlider.ValueChanged += (_, _) =>
-            GateLabel.Text = $"Порог шумоподавителя: {(GateSlider.Value / 10000):0.000}";
-        PregainLabel.Text = $"Предусиление входа: x{(PregainSlider.Value / 100):0.0}";
-        GateLabel.Text = $"Порог шумоподавителя: {(GateSlider.Value / 10000):0.000}";
+        _ready = true;
+    }
+
+    private void ApplyLang()
+    {
+        Title = Loc.SettingsTitle;
+        DevGroup.Header = Loc.SetDevices;
+        MicLabel.Text = Loc.SetMic;
+        CableLabel.Text = Loc.SetCable;
+        MonLabel.Text = Loc.SetMonitor;
+        VirtLabel.Text = Loc.SetVirtInSystem;
+        RefreshBtn.Content = "↻ " + Loc.Refresh;
+        ParGroup.Header = Loc.SetParams;
+        LangGroup.Header = Loc.SetLang == "Язык:" ? "Язык / Language" : "Language / Язык";
+        CfgLabel.Text = Loc.SetConfigFile;
+        OpenFolderBtn.Content = Loc.OpenFolder;
+        ResetBtn.Content = Loc.ResetAll;
+    }
+
+    private void LangBox_Changed(object sender, SelectionChangedEventArgs e)
+    {
+        if (!_ready) return;
+        Loc.Lang = LangBox.SelectedIndex == 1 ? "en" : "ru";
+        _config.Language = Loc.Lang;
+        ApplyLang();
+        UpdateParamLabels();
+        UpdateVirtMic();
+    }
+
+    private void UpdateParamLabels()
+    {
+        PregainLabel.Text = Loc.Pregain(PregainSlider.Value / 100);
+        GateLabel.Text = Loc.Gate(GateSlider.Value / 10000);
+    }
+
+    private void RefreshLists()
+    {
+        string? i = (InputBox.SelectedItem as OspDevice)?.Id;
+        string? c = (CableBox.SelectedItem as OspDevice)?.Id;
+        string? m = (MonitorBox.SelectedItem as OspDevice)?.Id;
+        InputBox.ItemsSource = OspEngine.GetInputMicrophones();
+        CableBox.ItemsSource = OspEngine.GetVirtualCables();
+        MonitorBox.ItemsSource = OspEngine.GetOutputDevices();
+        SelectById(InputBox, i);
+        SelectById(CableBox, c);
+        SelectById(MonitorBox, m);
+    }
+
+    private static void SelectById(ComboBox box, string? id)
+    {
+        if (id != null)
+            foreach (var item in box.Items)
+                if (item is OspDevice d && d.Id == id) { box.SelectedItem = item; return; }
+        if (box.SelectedIndex < 0 && box.Items.Count > 0) box.SelectedIndex = 0;
+    }
+
+    private void UpdateVirtMic()
+    {
+        VirtMicText.Text = CableBox.SelectedItem is OspDevice dev
+            ? OspEngine.FindVirtualMicName(dev.Name)
+            : Loc.NoCable;
+    }
+
+    private void RefreshBtn_Click(object sender, RoutedEventArgs e)
+    {
+        RefreshLists();
+        UpdateVirtMic();
     }
 
     private void OpenFolder_Click(object sender, RoutedEventArgs e)
@@ -36,10 +119,10 @@ public partial class SettingsWindow : Window
 
     private void Reset_Click(object sender, RoutedEventArgs e)
     {
-        if (MessageBox.Show("Сбросить все настройки (голоса, громкости, устройства)?\nФайлы падов сохранятся.",
-                "OSP", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
+        if (MessageBox.Show(Loc.ResetAsk, "OSP", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
         var pads = _config.PadFiles;
-        var fresh = new OspConfig { PadFiles = pads };
+        var lang = _config.Language;
+        var fresh = new OspConfig { PadFiles = pads, Language = lang };
         _config.InputDeviceId = fresh.InputDeviceId;
         _config.OutputDeviceId = fresh.OutputDeviceId;
         _config.MonitorDeviceId = fresh.MonitorDeviceId;
@@ -52,15 +135,27 @@ public partial class SettingsWindow : Window
         _config.PadGain = fresh.PadGain;
         _config.InputPregain = fresh.InputPregain;
         _config.GateThreshold = fresh.GateThreshold;
+        _config.Save();
+        RefreshLists();
+        SelectById(InputBox, null);
+        SelectById(CableBox, null);
+        SelectById(MonitorBox, null);
+        UpdateVirtMic();
         PregainSlider.Value = _config.InputPregain * 100;
         GateSlider.Value = _config.GateThreshold * 10000;
-        _config.Save();
     }
 
     private void Ok_Click(object sender, RoutedEventArgs e)
     {
+        SelectedInputId = (InputBox.SelectedItem as OspDevice)?.Id;
+        SelectedOutputId = (CableBox.SelectedItem as OspDevice)?.Id;
+        SelectedMonitorId = (MonitorBox.SelectedItem as OspDevice)?.Id;
+        _config.InputDeviceId = SelectedInputId;
+        _config.OutputDeviceId = SelectedOutputId;
+        _config.MonitorDeviceId = SelectedMonitorId;
         _config.InputPregain = (float)(PregainSlider.Value / 100.0);
         _config.GateThreshold = (float)(GateSlider.Value / 10000.0);
+        _config.Language = Loc.Lang;
         _config.Save();
         DialogResult = true;
     }

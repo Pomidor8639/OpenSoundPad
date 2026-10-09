@@ -8,21 +8,11 @@
     <Window.Resources>
         <Style TargetType="GroupBox">
             <Setter Property="Foreground" Value="#E8EAF0"/>
-            <Setter Property="BorderBrush" Value="#2A2E37"/>
+            <Setter Property="BorderBrush" Value="#23262E"/>
             <Setter Property="Margin" Value="6"/>
             <Setter Property="Padding" Value="8"/>
         </Style>
-        <!-- стиль кнопок задан глобально в App.xaml -->
-        <Style TargetType="ComboBox">
-            <Setter Property="Margin" Value="0,3"/>
-        </Style>
-        <Style TargetType="Slider">
-            <Setter Property="Margin" Value="0,2"/>
-        </Style>
-        <Style TargetType="RadioButton">
-            <Setter Property="Foreground" Value="#E8EAF0"/>
-            <Setter Property="Margin" Value="0,3"/>
-        </Style>
+        <!-- стиль слайдеров задан глобально в App.xaml -->
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="#9AA0AE"/>
         </Style>
@@ -31,109 +21,125 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Шапка -->
-        <DockPanel Grid.Row="0" Background="#0C0E12" LastChildFill="True">
-            <TextBlock Text="OSP" FontSize="26" FontWeight="Bold" Foreground="#3DDC84"
-                       VerticalAlignment="Center" Margin="12,6,4,6"/>
-            <StackPanel VerticalAlignment="Center">
-                <TextBlock Text="OpenSoundPad — Real-Time Voice Changer + SoundPad"
-                           FontSize="13" Foreground="#E8EAF0"/>
-                <TextBlock x:Name="StatusText" Text="Остановлен" FontSize="11"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
-                <Button x:Name="StartBtn" Content="▶ Старт" Width="100" Click="StartBtn_Click"/>
-                <Button x:Name="StopBtn" Content="■ Стоп" Width="85" Click="StopBtn_Click" IsEnabled="False"/>
-                <Border Width="1" Background="#2A2E37" Margin="8,6"/>
-                <Button x:Name="DevicesBtn" Content="🎙 Устройства" Width="115" Click="DevicesBtn_Click"/>
-                <Button x:Name="SettingsBtn" Content="⚙ Настройки" Width="110" Click="SettingsBtn_Click"/>
-            </StackPanel>
-        </DockPanel>
+        <!-- Меню -->
+        <Menu Grid.Row="0">
+            <MenuItem x:Name="FileMenu" Header="Файл">
+                <MenuItem x:Name="MiOpenFolder" Header="Открыть папку конфига" Click="MiOpenFolder_Click"/>
+                <Separator/>
+                <MenuItem x:Name="MiExit" Header="Выход" Click="MiExit_Click"/>
+            </MenuItem>
+            <MenuItem x:Name="SettingsMenu" Header="Настройки">
+                <MenuItem x:Name="MiSettings" Header="Настройки…" Click="MiSettings_Click"/>
+            </MenuItem>
+            <MenuItem x:Name="HelpMenu" Header="Справка">
+                <MenuItem x:Name="MiAbout" Header="О программе" Click="MiAbout_Click"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Тулбар -->
+        <ToolBarTray Grid.Row="1">
+            <ToolBar>
+                <Button x:Name="TbStart" Content="▶ Старт" Width="92" Click="StartBtn_Click"/>
+                <Button x:Name="TbStop" Content="■ Стоп" Width="85" Click="StopBtn_Click" IsEnabled="False"/>
+                <Separator/>
+                <Button x:Name="TbEffect" Content="Эффект выкл (T)" Width="130" Click="EffectBtn_Click"/>
+                <Button x:Name="TbMute" Content="Мут (M)" Width="95" Click="MuteBtn_Click"/>
+                <Button x:Name="TbMonitor" Content="Монитор (L)" Width="115" Click="MonitorBtn_Click"/>
+                <Separator/>
+                <Button x:Name="TbPadsStop" Content="Стоп падов" Width="95" Click="StopPadsBtn_Click"/>
+            </ToolBar>
+        </ToolBarTray>
 
         <!-- Центр -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="285"/>
+                <ColumnDefinition Width="270"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="305"/>
+                <ColumnDefinition Width="290"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Голос -->
-            <GroupBox Grid.Column="0" Header="Голосовой модуль">
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                        <TextBlock Text="Эффект: " VerticalAlignment="Center"/>
+            <!-- Сайдбар: голоса -->
+            <GroupBox Grid.Column="0" x:Name="VoicesGroup" Header="Голоса">
+                <DockPanel LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,4">
+                        <TextBlock x:Name="EffectLabel" Text="Эффект: " VerticalAlignment="Center"/>
                         <TextBlock x:Name="EffectState" Text="АКТИВЕН" Foreground="#3DDC84" FontWeight="Bold"/>
                     </StackPanel>
-                    <RadioButton x:Name="Voice1" Content="1 — Аноним" IsChecked="True" Checked="Voice_Checked"/>
-                    <RadioButton x:Name="Voice2" Content="2 — Женский" Checked="Voice_Checked"/>
-                    <RadioButton x:Name="Voice3" Content="3 — Ребенок" Checked="Voice_Checked"/>
-                    <RadioButton x:Name="Voice4" Content="4 — Демон" Checked="Voice_Checked"/>
-                    <RadioButton x:Name="Voice5" Content="5 — Свой" Checked="Voice_Checked"/>
-                    <Separator Margin="0,8"/>
-                    <TextBlock Text="Свой голос (пресет 5):" Foreground="#E8EAF0" FontWeight="Bold"/>
-                    <TextBlock x:Name="PitchLabel" Text="Питч: -5.0 st"/>
-                    <Slider x:Name="PitchSlider" Minimum="-18" Maximum="18" Value="-5" TickFrequency="1" ValueChanged="CustomParam_Changed"/>
-                    <TextBlock x:Name="DriveLabel" Text="Дисторшн: 25%"/>
-                    <Slider x:Name="DriveSlider" Minimum="0" Maximum="100" Value="25" ValueChanged="CustomParam_Changed"/>
-                    <TextBlock x:Name="BassLabel" Text="Бас: +6.0 дБ"/>
-                    <Slider x:Name="BassSlider" Minimum="0" Maximum="15" Value="6" TickFrequency="0.5" ValueChanged="CustomParam_Changed"/>
-                    <TextBlock x:Name="RobotLabel" Text="Робот: 0%"/>
-                    <Slider x:Name="RobotSlider" Minimum="0" Maximum="100" Value="0" ValueChanged="CustomParam_Changed"/>
-                    <Separator Margin="0,8"/>
-                    <TextBlock x:Name="VolumeLabel" Text="Громкость: 200%"/>
-                    <Slider x:Name="VolumeSlider" Minimum="50" Maximum="400" Value="200" ValueChanged="Volume_Changed"/>
-                    <WrapPanel Margin="0,6,0,0">
-                        <Button x:Name="EffectBtn" Content="Выкл. эффект (T)" Click="EffectBtn_Click" Width="130"/>
-                        <Button x:Name="MuteBtn" Content="Мут (M)" Click="MuteBtn_Click" Width="100"/>
-                        <Button x:Name="MonitorBtn" Content="Монитор (L)" Click="MonitorBtn_Click" Width="110"/>
-                    </WrapPanel>
-                    <TextBlock Text="Клавиши: 1-5 голоса, T эффект, M мут, L монитор"
-                               TextWrapping="Wrap" Margin="0,8,0,0" FontSize="11"/>
-                </StackPanel>
-            </GroupBox>
-
-            <!-- Саундпад -->
-            <GroupBox Grid.Column="1" Header="Саундпад (клик — играть, правый клик — загрузить/очистить)">
-                <DockPanel LastChildFill="True">
-                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="Громкость падов:" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <Slider x:Name="PadGainSlider" Minimum="0" Maximum="200" Value="100" Width="180" ValueChanged="PadGain_Changed"/>
-                        <Button x:Name="StopPadsBtn" Content="Стоп все пады" Click="StopPadsBtn_Click" Margin="10,0,0,0"/>
+                    <TextBlock DockPanel.Dock="Bottom" x:Name="HotkeyHint" Text="Клавиши" TextWrapping="Wrap"
+                               FontSize="11" Margin="0,8,0,0"/>
+                    <StackPanel DockPanel.Dock="Bottom">
+                        <TextBlock x:Name="CustomHeader" Text="Свой голос" Foreground="#E8EAF0" FontWeight="Bold" Margin="0,8,0,0"/>
+                        <TextBlock x:Name="PitchLabel" Text="Питч"/>
+                        <Slider x:Name="PitchSlider" Minimum="-18" Maximum="18" Value="-5" ValueChanged="CustomParam_Changed"/>
+                        <TextBlock x:Name="DriveLabel" Text="Дисторшн"/>
+                        <Slider x:Name="DriveSlider" Minimum="0" Maximum="100" Value="25" ValueChanged="CustomParam_Changed"/>
+                        <TextBlock x:Name="BassLabel" Text="Бас"/>
+                        <Slider x:Name="BassSlider" Minimum="0" Maximum="15" Value="6" ValueChanged="CustomParam_Changed"/>
+                        <TextBlock x:Name="RobotLabel" Text="Робот"/>
+                        <Slider x:Name="RobotSlider" Minimum="0" Maximum="100" Value="0" ValueChanged="CustomParam_Changed"/>
+                        <TextBlock x:Name="VolumeLabel" Text="Громкость"/>
+                        <Slider x:Name="VolumeSlider" Minimum="50" Maximum="400" Value="200" ValueChanged="Volume_Changed"/>
                     </StackPanel>
-                    <UniformGrid x:Name="PadGrid" Rows="4" Columns="3"/>
+                    <ListBox x:Name="VoicesBox" SelectionChanged="VoicesBox_Changed"/>
                 </DockPanel>
             </GroupBox>
 
-            <!-- Устройства -->
-            <GroupBox Grid.Column="2" Header="Устройства и уровни">
+            <!-- Саундпад списком -->
+            <GroupBox Grid.Column="1" x:Name="PadsGroup" Header="Саундпад">
+                <DockPanel LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center">
+                        <TextBlock x:Name="PadGainLabel" Text="Громкость падов:" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <Slider x:Name="PadGainSlider" Minimum="0" Maximum="200" Value="100" Width="180" ValueChanged="PadGain_Changed"/>
+                        <Button x:Name="StopPadsBtn" Content="Стоп все" Click="StopPadsBtn_Click" Margin="10,0,0,0"/>
+                    </StackPanel>
+                    <ListView x:Name="PadsView" SelectionMode="Single"
+                              MouseDoubleClick="PadsView_DoubleClick"
+                              KeyDown="PadsView_KeyDown">
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem x:Name="CtxLoad" Header="Загрузить звук…" Click="CtxLoad_Click"/>
+                                <MenuItem x:Name="CtxClear" Header="Очистить" Click="CtxClear_Click"/>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn x:Name="ColNum" Header="#" Width="36" DisplayMemberBinding="{Binding Num}"/>
+                                <GridViewColumn x:Name="ColName" Header="Название" Width="280" DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn x:Name="ColDur" Header="Длит." Width="70" DisplayMemberBinding="{Binding Duration}"/>
+                                <GridViewColumn x:Name="ColKey" Header="Клавиша" Width="80" DisplayMemberBinding="{Binding Key}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </DockPanel>
+            </GroupBox>
+
+            <!-- Уровни -->
+            <GroupBox Grid.Column="2" x:Name="LevelsGroup" Header="Уровни">
                 <StackPanel>
-                    <TextBlock Text="Микрофон:" Foreground="#E8EAF0"/>
-                    <TextBlock x:Name="InputName" Text="—" Foreground="#E8EAF0" TextWrapping="Wrap" FontSize="12"/>
-                    <TextBlock Text="Виртуальный кабель:" Foreground="#E8EAF0" Margin="0,6,0,0"/>
-                    <TextBlock x:Name="CableName" Text="—" Foreground="#E8EAF0" TextWrapping="Wrap" FontSize="12"/>
-                    <TextBlock Text="Наушники (монитор):" Foreground="#E8EAF0" Margin="0,6,0,0"/>
-                    <TextBlock x:Name="MonitorName" Text="—" Foreground="#E8EAF0" TextWrapping="Wrap" FontSize="12"/>
-                    <Button x:Name="OpenDevicesBtn" Content="🎙 Выбрать устройства…" Click="DevicesBtn_Click" Margin="0,8,0,0"/>
-                    <Separator Margin="0,8"/>
-                    <TextBlock Text="ВХОД (MIC)" Foreground="#E8EAF0"/>
+                    <TextBlock x:Name="LevelInLabel" Text="ВХОД (MIC)" Foreground="#E8EAF0"/>
                     <ProgressBar x:Name="InputVu" Minimum="0" Maximum="100" Height="14" Margin="0,2"/>
-                    <TextBlock Text="ВЫХОД (MOD + пады)" Foreground="#E8EAF0" Margin="0,6,0,0"/>
+                    <TextBlock x:Name="LevelOutLabel" Text="ВЫХОД (MOD + пады)" Foreground="#E8EAF0" Margin="0,6,0,0"/>
                     <ProgressBar x:Name="OutputVu" Minimum="0" Maximum="100" Height="14" Margin="0,2"/>
                     <Separator Margin="0,8"/>
-                    <TextBlock Text="Микрофон в системе:"/>
+                    <TextBlock x:Name="VirtMicHeader" Text="Микрофон в системе:"/>
                     <TextBlock x:Name="VirtMicText" Text="—" Foreground="#3DDC84" TextWrapping="Wrap"/>
                     <TextBlock x:Name="CableHint" TextWrapping="Wrap" FontSize="11" Margin="0,6,0,0"
-                               Text="Если кабеля нет в списке — установите VB-CABLE и выберите его в окне устройств."/>
+                               Text="Если кабеля нет — установите VB-CABLE и выберите его в настройках."/>
                 </StackPanel>
             </GroupBox>
         </Grid>
 
         <!-- Статусбар -->
-        <StatusBar Grid.Row="2" Background="#0C0E12" Foreground="#9AA0AE">
+        <StatusBar Grid.Row="3">
+            <StatusBarItem>
+                <TextBlock x:Name="StatusText" Text="Остановлен" FontSize="11"/>
+            </StatusBarItem>
+            <Separator/>
             <StatusBarItem>
                 <TextBlock x:Name="ConfigPathText" Text="config" FontSize="11"/>
             </StatusBarItem>

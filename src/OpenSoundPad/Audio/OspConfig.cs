@@ -23,6 +23,7 @@ public sealed class OspConfig
     public float PadGain { get; set; } = 1.0f;
     public float InputPregain { get; set; } = 2.2f;
     public float GateThreshold { get; set; } = 0.003f;
+    public string Language { get; set; } = "ru";
     public Dictionary<string, string> PadFiles { get; set; } = new();
 
     public static string GetFilePath()

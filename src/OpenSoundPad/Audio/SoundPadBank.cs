@@ -40,6 +40,16 @@ public sealed class SoundPadBank
     public float GetPadGain(int index) { lock (_sync) return _pads[index].Gain; }
     public void SetPadGain(int index, float gain) { lock (_sync) _pads[index].Gain = Math.Clamp(gain, 0f, 2f); }
 
+    public TimeSpan? GetPadDuration(int index)
+    {
+        lock (_sync)
+        {
+            var s = _pads[index].Samples;
+            if (s == null || _sampleRate <= 0) return null;
+            return TimeSpan.FromSeconds((double)s.Length / _sampleRate);
+        }
+    }
+
     public bool LoadPad(int index, string filePath)
     {
         try

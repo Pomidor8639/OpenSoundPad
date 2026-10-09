@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:OpenSoundPad"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <!-- Единый тёмный стиль кнопок: никаких белых, включая disabled -->
+        <!-- ===== Кнопки: только тёмные ===== -->
         <Style TargetType="Button">
             <Setter Property="Background" Value="#23262E"/>
             <Setter Property="Foreground" Value="#E8EAF0"/>
@@ -39,10 +39,185 @@
             </Setter>
         </Style>
 
-        <!-- Тёмные выпадающие списки -->
+        <!-- ===== Слайдеры: тёмные ===== -->
+        <Style x:Key="SliderThumb" TargetType="Thumb">
+            <Setter Property="Width" Value="14"/>
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Thumb">
+                        <Border Background="#3DDC84" BorderBrush="#1E7A4C" BorderThickness="1"
+                                CornerRadius="4" Width="14" Height="18"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Slider">
+            <Setter Property="Margin" Value="0,2"/>
+            <Setter Property="Foreground" Value="#3DDC84"/>
+            <Setter Property="Background" Value="#1A1D23"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid Margin="0,4">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" Height="5" CornerRadius="2"
+                                    Background="#2A2E37" Margin="7,0"/>
+                            <Track Grid.Row="0" x:Name="PART_Track" Margin="0,-7,0,-7">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="Slider.DecreaseLarge" Focusable="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Background="Transparent"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="Slider.IncreaseLarge" Focusable="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Background="Transparent"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Style="{StaticResource SliderThumb}"/>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===== Прогресс (VU): тёмный фон, зелёное заполнение ===== -->
+        <Style TargetType="ProgressBar">
+            <Setter Property="Background" Value="#1A1D23"/>
+            <Setter Property="Foreground" Value="#3DDC84"/>
+            <Setter Property="BorderBrush" Value="#2A2E37"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <!-- ===== Списки: тёмные ===== -->
+        <Style TargetType="ListBox">
+            <Setter Property="Background" Value="#16181D"/>
+            <Setter Property="Foreground" Value="#E8EAF0"/>
+            <Setter Property="BorderBrush" Value="#2A2E37"/>
+        </Style>
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Bd" Background="Transparent" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#23262E"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#1E3A2B"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="ListView">
+            <Setter Property="Background" Value="#16181D"/>
+            <Setter Property="Foreground" Value="#E8EAF0"/>
+            <Setter Property="BorderBrush" Value="#2A2E37"/>
+        </Style>
+        <Style TargetType="ListViewItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#E8EAF0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                Padding="4,5" BorderThickness="0,0,0,1" BorderBrush="#1E2127">
+                            <GridViewRowPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#23262E"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#1E3A2B"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="GridViewColumnHeader">
+            <Setter Property="Background" Value="#1A1D23"/>
+            <Setter Property="Foreground" Value="#9AA0AE"/>
+            <Setter Property="BorderBrush" Value="#2A2E37"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GridViewColumnHeader">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="0,0,1,1" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Left"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===== Меню / тулбар / контекстные: тёмные ===== -->
+        <Style TargetType="Menu">
+            <Setter Property="Background" Value="#0C0E12"/>
+            <Setter Property="Foreground" Value="#E8EAF0"/>
+        </Style>
+        <Style TargetType="MenuItem">
+            <Setter Property="Background" Value="#0C0E12"/>
+            <Setter Property="Foreground" Value="#E8EAF0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style TargetType="ContextMenu">
+            <Setter Property="Background" Value="#1A1D23"/>
+            <Setter Property="Foreground" Value="#E8EAF0"/>
+            <Setter Property="BorderBrush" Value="#353A45"/>
+        </Style>
+        <Style TargetType="ToolBar">
+            <Setter Property="Background" Value="#0C0E12"/>
+        </Style>
+        <Style TargetType="ToolBarTray">
+            <Setter Property="Background" Value="#0C0E12"/>
+        </Style>
+        <Style TargetType="ToolTip">
+            <Setter Property="Background" Value="#1A1D23"/>
+            <Setter Property="Foreground" Value="#E8EAF0"/>
+            <Setter Property="BorderBrush" Value="#353A45"/>
+        </Style>
+
+        <!-- ===== Прочее ===== -->
+        <Style TargetType="GroupBox">
+            <Setter Property="Foreground" Value="#E8EAF0"/>
+            <Setter Property="BorderBrush" Value="#23262E"/>
+            <Setter Property="Margin" Value="6"/>
+            <Setter Property="Padding" Value="8"/>
+        </Style>
         <Style TargetType="ComboBoxItem">
             <Setter Property="Background" Value="#23262E"/>
             <Setter Property="Foreground" Value="#E8EAF0"/>
+        </Style>
+        <Style TargetType="StatusBar">
+            <Setter Property="Background" Value="#0C0E12"/>
+            <Setter Property="Foreground" Value="#9AA0AE"/>
+        </Style>
+        <Style TargetType="Separator">
+            <Setter Property="Background" Value="#2A2E37"/>
         </Style>
     </Application.Resources>
 </Application>
