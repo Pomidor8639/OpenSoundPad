@@ -72,7 +72,7 @@
                     <StackPanel>
                         <DockPanel Margin="0,2,0,6">
                             <TextBlock Text="OSP — OpenSoundPad" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource AccentGreen}"/>
-                            <TextBlock x:Name="AppVersionText" Text="v1.8.0" HorizontalAlignment="Right" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                            <TextBlock x:Name="AppVersionText" Text="v1.8.1" HorizontalAlignment="Right" Foreground="{StaticResource TextMuted}" FontSize="12"/>
                         </DockPanel>
                         <TextBlock x:Name="AppDescText" Text="Голосовой модулятор реального времени и саундпад с выводом в виртуальный микрофон Windows."
                                    Foreground="{StaticResource TextMuted}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"/>

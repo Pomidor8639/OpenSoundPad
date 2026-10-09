@@ -126,7 +126,7 @@ public partial class SettingsWindow : Window
     {
         try
         {
-            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string baseDir = Path.GetDirectoryName(Environment.ProcessPath) ?? AppDomain.CurrentDomain.BaseDirectory;
             string cableDir = Path.Combine(baseDir, "vbcable");
             string setupExe = Path.Combine(cableDir, "VBCABLE_Setup_x64.exe");
             if (File.Exists(setupExe))

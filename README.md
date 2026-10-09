@@ -4,7 +4,7 @@
 
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
-[![Version](https://img.shields.io/badge/Version-v1.8.0-10B981?style=for-the-badge)](https://github.com/Pomidor8639/OpenSoundPad/releases)
+[![Version](https://img.shields.io/badge/Version-v1.8.1-10B981?style=for-the-badge)](https://github.com/Pomidor8639/OpenSoundPad/releases)
 [![NAudio](https://img.shields.io/badge/NAudio-WASAPI-FF6F00?style=for-the-badge)](https://github.com/naudio/NAudio)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
@@ -13,6 +13,16 @@
 [Скачать релиз](https://github.com/Pomidor8639/OpenSoundPad/releases) • [Возможности](#возможности) • [Управление](#управление-и-горячие-клавиши) • [Сборка](#сборка-из-исходников)
 
 </div>
+
+---
+
+## Что нового в версии 1.8.1
+
+- **Исправление автономного запуска (Self-Contained Standalone Fix)**:
+  - Устранена ошибка `DllNotFoundException` (связанная с `wpfgfx_cor3.dll`, `PresentationNative_cor3.dll`, `D3DCompiler_47_cor3.dll`), из-за которой `OpenSoundPad.exe` не запускался вне каталога компиляции.
+  - Нативные библиотеки WPF и среда выполнения теперь полностью упакованы в самораспаковывающийся бандл (`IncludeNativeLibrariesForSelfExtract` + сжатие).
+  - Приложение гарантированно запускается в любой папке, на Рабочем столе, из папки загрузок или с внешнего накопителя без установки дополнительных библиотек.
+  - Добавлена глобальная обработка непредвиденных исключений с информативными сообщениями.
 
 ---
 
