@@ -98,9 +98,6 @@ public partial class MainWindow : Window
         MiOpenFolder.Header = Loc.MenuOpenFolder;
         MiExit.Header = Loc.MenuExit;
         SettingsMenu.Header = Loc.MenuSettings;
-        MiSettings.Header = Loc.MenuOpenSettings;
-        HelpMenu.Header = Loc.MenuHelp;
-        MiAbout.Header = Loc.MenuAbout;
 
         BtnMinimize.ToolTip = Loc.WinMinimize;
         BtnMaximize.ToolTip = WindowState == WindowState.Maximized ? Loc.WinRestore : Loc.WinMaximize;
@@ -133,7 +130,7 @@ public partial class MainWindow : Window
 
         // Саундпад панель
         PadsGroup.Header = $"{Loc.GrPads} ({_padRows.Count})";
-        PadGainLabel.Text = Loc.PadGain;
+        PadVolumeKnob.Title = Loc.PadVolumeTitle;
         StopPadsBtnText.Text = Loc.StopPads + " (Esc)";
         PadDropHint.Text = Loc.SoundpadHint;
         PadHotkeyHint.Text = Loc.PadHotkeysHint;
@@ -147,7 +144,7 @@ public partial class MainWindow : Window
         CtxPlay.Header = Loc.PlayPad;
         CtxStop.Header = Loc.StopPad;
         CtxRepeat.Header = Loc.Lang == "en" ? "Loop / Repeat (R)" : "Зациклить / Повтор (R)";
-        CtxAdd.Header = Loc.AddSound;
+        CtxRename.Header = Loc.RenameSound;
         CtxDelete.Header = Loc.RemoveSound + " (Del)";
         CtxClearAll.Header = Loc.ClearAllPads;
         PadsView.ToolTip = Loc.PlayTip;
@@ -509,10 +506,14 @@ public partial class MainWindow : Window
             int added = 0;
             foreach (string file in dlg.FileNames)
             {
-                if (File.Exists(file) && _engine.Pads.AddPad(file) >= 0)
+                if (File.Exists(file))
                 {
-                    _config.PadList.Add(file);
-                    added++;
+                    string persistentFile = EnsurePersistentSoundFile(file);
+                    if (_engine.Pads.AddPad(persistentFile) >= 0)
+                    {
+                        _config.PadList.Add(persistentFile);
+                        added++;
+                    }
                 }
             }
             if (added > 0)
@@ -522,6 +523,29 @@ public partial class MainWindow : Window
                 PadsView.SelectedIndex = _padRows.Count - 1;
             }
             else MessageBox.Show(Loc.LoadFailed, "OSP", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private void CtxRename_Click(object sender, RoutedEventArgs e)
+    {
+        int idx = SelectedPad();
+        if (idx < 0 || idx >= _engine.Pads.PadCount) return;
+
+        string currentName = _engine.Pads.GetPadName(idx);
+        var renameWin = new RenameWindow(currentName) { Owner = this };
+        if (renameWin.ShowDialog() == true)
+        {
+            string newName = renameWin.ResultName;
+            _engine.Pads.SetPadName(idx, newName);
+
+            string? file = _engine.Pads.GetPadFile(idx);
+            if (!string.IsNullOrEmpty(file))
+            {
+                _config.PadTitles[file] = newName;
+                _config.PadTitles[Path.GetFileName(file)] = newName;
+            }
+            _config.Save();
+            RefreshPadList();
         }
     }
 
@@ -569,10 +593,14 @@ public partial class MainWindow : Window
                 int added = 0;
                 foreach (string file in files)
                 {
-                    if (File.Exists(file) && _engine.Pads.AddPad(file) >= 0)
+                    if (File.Exists(file))
                     {
-                        _config.PadList.Add(file);
-                        added++;
+                        string persistentFile = EnsurePersistentSoundFile(file);
+                        if (_engine.Pads.AddPad(persistentFile) >= 0)
+                        {
+                            _config.PadList.Add(persistentFile);
+                            added++;
+                        }
                     }
                 }
                 if (added > 0)
@@ -582,6 +610,46 @@ public partial class MainWindow : Window
                     PadsView.SelectedIndex = _padRows.Count - 1;
                 }
             }
+        }
+    }
+
+    private static string EnsurePersistentSoundFile(string sourceFile)
+    {
+        try
+        {
+            string appDir = Path.GetDirectoryName(OspConfig.GetFilePath()) ?? "";
+            string soundsDir = Path.Combine(appDir, "sounds");
+            Directory.CreateDirectory(soundsDir);
+
+            string fullSource = Path.GetFullPath(sourceFile);
+            if (fullSource.StartsWith(soundsDir, StringComparison.OrdinalIgnoreCase))
+                return fullSource;
+
+            string fileName = Path.GetFileName(sourceFile);
+            string destFile = Path.Combine(soundsDir, fileName);
+
+            if (File.Exists(destFile))
+            {
+                var fiSrc = new FileInfo(sourceFile);
+                var fiDst = new FileInfo(destFile);
+                if (fiSrc.Length != fiDst.Length)
+                {
+                    string nameNoExt = Path.GetFileNameWithoutExtension(fileName);
+                    string ext = Path.GetExtension(fileName);
+                    destFile = Path.Combine(soundsDir, $"{nameNoExt}_{Guid.NewGuid():N}{ext}");
+                }
+            }
+
+            if (!File.Exists(destFile))
+            {
+                File.Copy(sourceFile, destFile, true);
+            }
+
+            return destFile;
+        }
+        catch
+        {
+            return sourceFile;
         }
     }
 
@@ -672,17 +740,51 @@ public partial class MainWindow : Window
             DriveKnob.Value = _config.Drive * 100;
             BassKnob.Value = _config.BassBoostDb;
             RobotKnob.Value = _config.RobotMod * 100;
-            PadGainSlider.Value = _config.PadGain * 100;
+            PadVolumeKnob.Value = _config.PadGain * 100;
             _engine.Pads.MasterGain = _config.PadGain;
             _engine.Pads.SetSampleRate(48000);
             _engine.Pads.ClearAll();
-            foreach (string file in _config.PadList)
+
+            string appDir = Path.GetDirectoryName(OspConfig.GetFilePath()) ?? "";
+            string soundsDir = Path.Combine(appDir, "sounds");
+            Directory.CreateDirectory(soundsDir);
+
+            for (int i = 0; i < _config.PadList.Count; i++)
             {
+                string file = _config.PadList[i];
+                if (!File.Exists(file))
+                {
+                    string candidate = Path.Combine(soundsDir, Path.GetFileName(file));
+                    if (File.Exists(candidate))
+                    {
+                        _config.PadList[i] = candidate;
+                        file = candidate;
+                    }
+                }
+                else
+                {
+                    string persistent = EnsurePersistentSoundFile(file);
+                    if (persistent != file)
+                    {
+                        _config.PadList[i] = persistent;
+                        file = persistent;
+                    }
+                }
+
                 if (!string.IsNullOrEmpty(file) && File.Exists(file))
-                    _engine.Pads.AddPad(file);
+                {
+                    int pIdx = _engine.Pads.AddPad(file);
+                    if (pIdx >= 0)
+                    {
+                        if (_config.PadTitles.TryGetValue(file, out string? customTitle) ||
+                            _config.PadTitles.TryGetValue(Path.GetFileName(file), out customTitle))
+                        {
+                            _engine.Pads.SetPadName(pIdx, customTitle);
+                        }
+                    }
+                }
             }
             VoicesBox.SelectedIndex = Math.Clamp(_config.VoiceId - 1, 0, 4);
-            UpdateLabels();
             RefreshPadList();
         }
         finally { _updatingUi = false; }
@@ -690,7 +792,6 @@ public partial class MainWindow : Window
 
     private void UpdateLabels()
     {
-        PadGainLabel.Text = $"{Loc.PadGain} {(int)PadGainSlider.Value}%";
     }
 
     private void PushParamsToDsp()
@@ -739,7 +840,7 @@ public partial class MainWindow : Window
             _engine.Dsp.SetVoice(SelectedVoice());
             PushParamsToDsp();
             _engine.Pads.SetSampleRate(_engine.Dsp.SampleRate);
-            _engine.Pads.MasterGain = (float)(PadGainSlider.Value / 100.0);
+            _engine.Pads.MasterGain = (float)(PadVolumeKnob.Value / 100.0);
             _config.Save();
 
             _engine.Start();
@@ -792,11 +893,11 @@ public partial class MainWindow : Window
         _config.Save();
     }
 
-    private void PadGain_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
+    private void PadVolumeKnob_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
         if (!_initialized || _updatingUi) return;
         UpdateLabels();
-        _engine.Pads.MasterGain = (float)(PadGainSlider.Value / 100.0);
+        _engine.Pads.MasterGain = (float)(PadVolumeKnob.Value / 100.0);
         _config.PadGain = _engine.Pads.MasterGain;
         _config.Save();
     }

@@ -6,6 +6,7 @@ public static class Loc
     public static string Lang = "ru";
     private static bool En => Lang == "en";
     public static bool IsRu => Lang != "en";
+    public static bool IsEn => Lang == "en";
 
     // Окно
     public static string WinMinimize => En ? "Minimize" : "Свернуть";
@@ -35,6 +36,9 @@ public static class Loc
     public static string ClearAllAsk => En ? "Remove all sounds from the list?" : "Удалить все звуки из списка?";
     public static string AddSound => En ? "Add sound…" : "Добавить звук…";
     public static string RemoveSound => En ? "Remove" : "Удалить";
+    public static string RenameSound => En ? "Rename…" : "Переименовать…";
+    public static string EnterNewName => En ? "Enter new sound name:" : "Введите новое название для звука:";
+    public static string PadVolumeTitle => En ? "PAD VOLUME" : "ГРОМКОСТЬ";
     public static string PlayingCount(int count) => En ? $"Active: {count}" : $"Играет: {count}";
     public static string SoundpadRouting => En ? "Routing to Cable:" : "Трансляция в кабель:";
     public static string SoundpadHint => En

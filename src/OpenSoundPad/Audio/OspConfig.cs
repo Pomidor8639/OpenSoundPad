@@ -27,6 +27,7 @@ public sealed class OspConfig
     public string Mode { get; set; } = "voicemod";
     public List<string> PadList { get; set; } = new();
     public Dictionary<string, string> PadFiles { get; set; } = new();
+    public Dictionary<string, string> PadTitles { get; set; } = new();
 
     public static string GetFilePath()
     {

@@ -35,12 +35,24 @@ public sealed class SoundPadBank
         }
     }
 
+    public void SetPadName(int index, string customTitle)
+    {
+        lock (_sync)
+        {
+            if (index >= 0 && index < _pads.Count)
+            {
+                _pads[index].CustomTitle = customTitle;
+            }
+        }
+    }
+
     public string GetPadName(int index)
     {
         lock (_sync)
         {
             if (index < 0 || index >= _pads.Count) return $"Pad {index + 1}";
             var p = _pads[index];
+            if (!string.IsNullOrWhiteSpace(p.CustomTitle)) return p.CustomTitle;
             if (p.Samples == null) return $"Pad {index + 1}";
             return Path.GetFileNameWithoutExtension(p.FilePath ?? $"Pad {index + 1}");
         }
@@ -282,6 +294,7 @@ public sealed class SoundPadBank
     {
         public float[]? Samples;
         public string? FilePath;
+        public string? CustomTitle;
         public float Gain = 1.0f;
         public readonly List<Voice> Voices = new();
     }

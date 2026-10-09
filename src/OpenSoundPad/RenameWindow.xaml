@@ -1,0 +1,51 @@
+<Window x:Class="OpenSoundPad.RenameWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Переименовать звук"
+        Width="380" Height="190"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BgWindow}"
+        Foreground="{StaticResource TextPrimary}"
+        ShowInTaskbar="False"
+        Icon="pack://application:,,,/app_icon.ico">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="34" ResizeBorderThickness="4" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+
+    <Grid Background="{StaticResource BgWindow}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- TitleBar -->
+            <RowDefinition Height="*"/>    <!-- Content -->
+        </Grid.RowDefinitions>
+
+        <!-- TitleBar -->
+        <Border Grid.Row="0" Background="{StaticResource BgDarkest}" BorderBrush="{StaticResource BorderDark}" BorderThickness="0,0,0,1" Height="34">
+            <DockPanel LastChildFill="True">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Button x:Name="BtnClose" Style="{StaticResource CaptionCloseBtnStyle}" Click="Cancel_Click" ToolTip="Закрыть">
+                        <Path Data="{StaticResource GeoWinClose}" Width="10" Height="10" Stroke="{StaticResource TextMuted}" StrokeThickness="1.2"/>
+                    </Button>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
+                    <Path Data="{StaticResource GeoWand}" Width="11" Height="11" Style="{StaticResource GreenIcon}" Margin="0,0,6,0"/>
+                    <TextBlock x:Name="TitleText" Text="Переименовать звук" FontWeight="SemiBold" FontSize="11" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Body -->
+        <StackPanel Grid.Row="1" Margin="16,12,16,12">
+            <TextBlock x:Name="PromptText" Text="Введите новое название для звука:" Foreground="{StaticResource TextMuted}" FontSize="11" Margin="0,0,0,8"/>
+            <TextBox x:Name="NameInput" Margin="0,0,0,14" Padding="8,6" FontSize="12"
+                     Background="{StaticResource BgInput}" Foreground="{StaticResource TextPrimary}"
+                     BorderBrush="{StaticResource BorderDark}" BorderThickness="1"
+                     KeyDown="NameInput_KeyDown"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="CancelBtn" Content="Отмена" Width="80" IsCancel="True" Click="Cancel_Click"/>
+                <Button x:Name="OkBtn" Content="Сохранить" Width="90" Margin="8,0,0,0" IsDefault="True" Click="Ok_Click"
+                        Background="{StaticResource AccentGreen}" Foreground="Black" FontWeight="SemiBold"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

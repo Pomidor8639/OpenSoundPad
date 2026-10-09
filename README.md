@@ -4,7 +4,7 @@
 
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
-[![Version](https://img.shields.io/badge/Version-v1.9.0-10B981?style=for-the-badge)](https://github.com/Pomidor8639/OpenSoundPad/releases)
+[![Version](https://img.shields.io/badge/Version-v1.10.0-10B981?style=for-the-badge)](https://github.com/Pomidor8639/OpenSoundPad/releases)
 [![NAudio](https://img.shields.io/badge/NAudio-WASAPI-FF6F00?style=for-the-badge)](https://github.com/naudio/NAudio)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
@@ -13,6 +13,25 @@
 [Скачать релиз](https://github.com/Pomidor8639/OpenSoundPad/releases) • [Возможности](#возможности) • [Управление](#управление-и-горячие-клавиши) • [Сборка](#сборка-из-исходников)
 
 </div>
+
+---
+
+## Что нового в версии 1.10.0
+
+- **Постоянное хранилище сэмплов (Persistent Storage)**:
+  - Все добавленные аудиофайлы (через проводник или drag-and-drop) автоматически копируются во внутреннее хранилище приложения (`%APPDATA%\OpenSoundPad\sounds\`).
+  - Звуки гарантированно не пропадут, даже если пользователь удалил или переместил исходные файлы из «Загрузок» или с Рабочего стола.
+- **Переименование звуков**:
+  - Добавлена возможность переименования треков через контекстное меню (ПКМ по треку -> «Переименовать…»).
+  - Новые названия отображаются в списке и сохраняются в конфигурации приложения.
+- **Крутилка громкости в саундпаде**:
+  - Ползунок громкости заменен на плавный круговой регулятор (0–200%), выполненный в едином дизайн-коде со Студией голоса.
+- **Исправление верстки крутилок**:
+  - Устранено обрезание цифровых бейджей со значениями при различных масштабах экрана Windows (DPI).
+- **Минималистичный заголовок и быстрое меню**:
+  - В заголовке оставлен только фирменный зеленый логотип OSP без лишних подписей.
+  - Пункт меню «Настройки» теперь мгновенно открывает окно настроек в один клик.
+  - Удалена неиспользуемая кнопка «Справка», а из контекстного меню саундпада убраны лишние разделители.
 
 ---
 

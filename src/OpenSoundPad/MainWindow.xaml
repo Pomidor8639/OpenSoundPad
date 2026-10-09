@@ -45,15 +45,13 @@
                     </Button>
                 </StackPanel>
 
-                <!-- Слева: Логотип приложения + Название -->
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="10,0,6,0">
+                <!-- Слева: Логотип приложения + Название OSP -->
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="10,0,10,0">
                     <Image Source="pack://application:,,,/app_icon.ico" Width="16" Height="16" Margin="0,0,8,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
-                    <TextBlock Text="OSP" FontWeight="Bold" FontSize="12" Foreground="{StaticResource AccentGreen}" VerticalAlignment="Center"/>
-                    <TextBlock Text=" — " FontSize="12" Foreground="{StaticResource TextSubtle}" VerticalAlignment="Center"/>
-                    <TextBlock Text="OpenSoundPad" FontSize="12" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <TextBlock Text="OSP" FontWeight="Bold" FontSize="12" Foreground="{StaticResource AccentGreen}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                 </StackPanel>
 
-                <!-- Меню программы (Файл, Настройки, Справка) на той же высоте -->
+                <!-- Меню программы (Файл, Настройки) на той же высоте -->
                 <Menu Background="Transparent" VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True" Margin="0">
                     <MenuItem x:Name="FileMenu" Header="Файл" Padding="8,4">
                         <MenuItem x:Name="MiOpenFolder" Header="Открыть папку конфига" Click="MiOpenFolder_Click">
@@ -68,20 +66,7 @@
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
-                    <MenuItem x:Name="SettingsMenu" Header="Настройки" Padding="8,4">
-                        <MenuItem x:Name="MiSettings" Header="Настройки…" Click="MiSettings_Click">
-                            <MenuItem.Icon>
-                                <Path Data="{StaticResource GeoSettings}" Width="12" Height="12" Style="{StaticResource WhiteIcon}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                    </MenuItem>
-                    <MenuItem x:Name="HelpMenu" Header="Справка" Padding="8,4">
-                        <MenuItem x:Name="MiAbout" Header="О программе" Click="MiAbout_Click">
-                            <MenuItem.Icon>
-                                <Path Data="{StaticResource GeoInfo}" Width="12" Height="12" Style="{StaticResource WhiteIcon}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                    </MenuItem>
+                    <MenuItem x:Name="SettingsMenu" Header="Настройки" Padding="8,4" Click="MiSettings_Click"/>
                 </Menu>
             </DockPanel>
         </Border>
@@ -445,13 +430,11 @@
                                             <Path Data="{StaticResource GeoRepeat}" Width="10" Height="10" Style="{StaticResource WhiteIcon}"/>
                                         </MenuItem.Icon>
                                     </MenuItem>
-                                    <Separator/>
-                                    <MenuItem x:Name="CtxAdd" Header="Добавить звук…" Click="AddPadBtn_Click">
+                                    <MenuItem x:Name="CtxRename" Header="Переименовать…" Click="CtxRename_Click">
                                         <MenuItem.Icon>
-                                            <Path Data="{StaticResource GeoPlus}" Width="11" Height="11" Style="{StaticResource WhiteIcon}"/>
+                                            <Path Data="{StaticResource GeoWand}" Width="10" Height="10" Style="{StaticResource WhiteIcon}"/>
                                         </MenuItem.Icon>
                                     </MenuItem>
-                                    <Separator/>
                                     <MenuItem x:Name="CtxDelete" Header="Удалить из списка (Del)" Click="CtxClear_Click">
                                         <MenuItem.Icon>
                                             <Path Data="{StaticResource GeoTrash}" Width="11" Height="11" Style="{StaticResource WhiteIcon}"/>
@@ -540,13 +523,22 @@
                         </Button>
                     </StackPanel>
 
-                    <!-- По центру: Громкость сэмплов + статус количества играющих -->
-                    <Border Background="{StaticResource BgDarkest}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="5" Padding="12,4" Margin="12,0" VerticalAlignment="Center">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Name="PadGainLabel" Text="Громкость: 100%" Foreground="{StaticResource TextPrimary}" FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <Slider x:Name="PadGainSlider" Minimum="0" Maximum="200" Value="100" Width="140" VerticalAlignment="Center" ValueChanged="PadGain_Changed"/>
-                            <Border Width="1" Background="{StaticResource BorderDark}" Margin="10,2"/>
-                            <TextBlock x:Name="ActivePadsCountText" Text="Играет: 0" Foreground="{StaticResource AccentGreen}" FontWeight="Bold" FontSize="11" VerticalAlignment="Center"/>
+                    <!-- По центру: Крутилка громкости падов + статус количества играющих -->
+                    <Border Background="{StaticResource BgDarkest}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="6" Padding="12,6" Margin="12,0" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <local:KnobControl x:Name="PadVolumeKnob"
+                                               Title="ГРОМКОСТЬ"
+                                               Minimum="0" Maximum="200"
+                                               Value="100" DefaultValue="100"
+                                               Step="1"
+                                               Unit="%"
+                                               Format="0"
+                                               ValueChanged="PadVolumeKnob_Changed"/>
+                            <Border Width="1" Background="{StaticResource BorderDark}" Margin="12,4"/>
+                            <StackPanel VerticalAlignment="Center" Margin="0,0,4,0">
+                                <TextBlock x:Name="ActivePadsCountText" Text="Играет: 0" Foreground="{StaticResource AccentGreen}" FontWeight="Bold" FontSize="12"/>
+                                <TextBlock Text="сэмплов" Foreground="{StaticResource TextSubtle}" FontSize="9"/>
+                            </StackPanel>
                         </StackPanel>
                     </Border>
                 </DockPanel>

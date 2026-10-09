@@ -125,9 +125,9 @@ public partial class KnobControl : UserControl
     private double _internalValue;
     private double _lastAngle;
 
-    private const double CenterX = 36.0;
-    private const double CenterY = 36.0;
-    private const double Radius = 27.0;
+    private const double CenterX = 34.0;
+    private const double CenterY = 34.0;
+    private const double Radius = 25.5;
     private const double StartAngle = -135.0;
     private const double SweepAngle = 270.0;
 

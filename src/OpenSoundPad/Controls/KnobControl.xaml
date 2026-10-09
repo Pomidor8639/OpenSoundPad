@@ -4,7 +4,9 @@
              Background="Transparent"
              Focusable="True"
              Cursor="Hand"
-             Width="110" Height="138">
+             MinWidth="86"
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center">
     <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/> <!-- Title -->
@@ -16,16 +18,16 @@
         <!-- Заголовок крутилки -->
         <TextBlock x:Name="TitleText" Grid.Row="0"
                    Text="TITLE"
-                   FontSize="11" FontWeight="SemiBold"
+                   FontSize="10" FontWeight="SemiBold"
                    Foreground="{StaticResource TextMuted}"
                    HorizontalAlignment="Center"
-                   Margin="0,0,0,6"/>
+                   Margin="0,0,0,4"/>
 
         <!-- Круговой циферблат -->
-        <Grid x:Name="DialCanvas" Grid.Row="1" Width="72" Height="72" HorizontalAlignment="Center" Background="Transparent">
+        <Grid x:Name="DialCanvas" Grid.Row="1" Width="68" Height="68" HorizontalAlignment="Center" Background="Transparent">
             <!-- Фоновое кольцо шкалы (Track) -->
             <Path x:Name="TrackArc"
-                  Stroke="#1C1C1C"
+                  Stroke="{StaticResource BorderDark}"
                   StrokeThickness="4"
                   StrokeStartLineCap="Round"
                   StrokeEndLineCap="Round"
@@ -41,28 +43,28 @@
 
             <!-- Центральный диск крутилки (Dial Cap) -->
             <Ellipse x:Name="DialBody"
-                     Width="46" Height="46"
-                     Fill="#111111"
-                     Stroke="#222222"
+                     Width="44" Height="44"
+                     Fill="{StaticResource BgCardElevated}"
+                     Stroke="{StaticResource BorderDark}"
                      StrokeThickness="1.5"
                      HorizontalAlignment="Center"
                      VerticalAlignment="Center"/>
 
             <!-- Внутренний круг для объема -->
-            <Ellipse Width="38" Height="38"
-                     Fill="#161616"
+            <Ellipse Width="36" Height="36"
+                     Fill="{StaticResource BgInput}"
                      HorizontalAlignment="Center"
                      VerticalAlignment="Center"
                      IsHitTestVisible="False"/>
 
             <!-- Вращающийся указатель -->
-            <Grid Width="46" Height="46" IsHitTestVisible="False">
+            <Grid Width="44" Height="44" IsHitTestVisible="False">
                 <Grid.RenderTransform>
-                    <RotateTransform x:Name="PointerRotation" CenterX="23" CenterY="23" Angle="-135"/>
+                    <RotateTransform x:Name="PointerRotation" CenterX="22" CenterY="22" Angle="-135"/>
                 </Grid.RenderTransform>
-                <Rectangle Width="3" Height="8"
-                           Fill="#FFFFFF"
-                           RadiusX="1.5" RadiusY="1.5"
+                <Rectangle Width="2.5" Height="8"
+                           Fill="{StaticResource TextPrimary}"
+                           RadiusX="1" RadiusY="1"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Top"
                            Margin="0,3,0,0"/>
@@ -75,14 +77,16 @@
                 BorderBrush="{StaticResource BorderDark}"
                 BorderThickness="1"
                 CornerRadius="4"
-                Padding="8,2"
-                Margin="0,6,0,0"
-                HorizontalAlignment="Center">
+                Padding="8,3"
+                Margin="0,4,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
             <TextBlock x:Name="ValueText"
                        Text="0"
                        FontSize="11" FontWeight="Bold"
                        Foreground="{StaticResource TextPrimary}"
-                       HorizontalAlignment="Center"/>
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
         </Border>
 
         <!-- Подзаголовок / Диапазон -->
@@ -91,6 +95,6 @@
                    FontSize="9"
                    Foreground="{StaticResource TextSubtle}"
                    HorizontalAlignment="Center"
-                   Margin="0,3,0,0"/>
+                   Margin="0,2,0,0"/>
     </Grid>
 </UserControl>
