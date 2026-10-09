@@ -17,7 +17,8 @@ public partial class MainWindow : Window
     private readonly OspConfig _config;
     private readonly DispatcherTimer _vuTimer;
     private readonly List<Button> _padButtons = new();
-    private bool _updatingUi;
+    private bool _updatingUi = true; // true на время InitializeComponent — гасит события XAML-парсера
+    private bool _initialized;
 
     public MainWindow()
     {
@@ -39,6 +40,8 @@ public partial class MainWindow : Window
 
         KeyDown += OnKeyDown;
         Closed += (_, _) => { _vuTimer.Stop(); _engine.Stop(); _config.Save(); };
+        _initialized = true;
+        _updatingUi = false;
     }
 
     // ---------- pads ----------
@@ -181,10 +184,10 @@ public partial class MainWindow : Window
     }
 
     private int SelectedVoice() =>
-        Voice2.IsChecked == true ? 2 :
-        Voice3.IsChecked == true ? 3 :
-        Voice4.IsChecked == true ? 4 :
-        Voice5.IsChecked == true ? 5 : 1;
+        Voice2?.IsChecked == true ? 2 :
+        Voice3?.IsChecked == true ? 3 :
+        Voice4?.IsChecked == true ? 4 :
+        Voice5?.IsChecked == true ? 5 : 1;
 
     private void UpdateLabels()
     {
@@ -269,7 +272,7 @@ public partial class MainWindow : Window
 
     private void Voice_Checked(object sender, RoutedEventArgs e)
     {
-        if (_updatingUi) return;
+        if (!_initialized || _updatingUi) return;
         int v = SelectedVoice();
         _engine.Dsp.SetVoice(v);
         _config.VoiceId = v;
@@ -280,8 +283,8 @@ public partial class MainWindow : Window
 
     private void CustomParam_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
+        if (!_initialized || _updatingUi) return;
         UpdateLabels();
-        if (_updatingUi) return;
         PushParamsToDsp();
         if (Voice5.IsChecked != true) Voice5.IsChecked = true;
         _config.VoiceId = 5;
@@ -290,8 +293,8 @@ public partial class MainWindow : Window
 
     private void Volume_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
+        if (!_initialized || _updatingUi) return;
         UpdateLabels();
-        if (_updatingUi) return;
         _engine.Dsp.VolumeGain = (float)(VolumeSlider.Value / 100.0);
         _config.VolumeGain = _engine.Dsp.VolumeGain;
         _config.Save();
@@ -299,7 +302,7 @@ public partial class MainWindow : Window
 
     private void PadGain_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
-        if (_updatingUi) return;
+        if (!_initialized || _updatingUi) return;
         _engine.Pads.MasterGain = (float)(PadGainSlider.Value / 100.0);
         _config.PadGain = _engine.Pads.MasterGain;
         _config.Save();
