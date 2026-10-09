@@ -1,0 +1,86 @@
+; OSP Virtual Microphone - WDM Audio Driver INF (TEMPLATE / SKELETON)
+; ОСНОВА: Microsoft SysVad sample (Windows-driver-samples/audio/sysvad), MIT License.
+; ЭТО НЕ ГОТОВЫЙ ДРАЙВЕР. Полный .sys собирается только из исходников SysVad
+; в окружении Visual Studio + WDK. Этот INF - отправная точка для форка.
+; НЕ ставить на основной машине. Только VM + testsigning. Ошибка = BSOD.
+;
+; Шаги (подробно - в чате):
+;   1. git clone https://github.com/microsoft/Windows-driver-samples.git
+;   2. Скопировать audio/sysvad -> osp-driver/src, переименовать SysVad -> OspVirtualMic
+;   3. Подставить свои GUID/имена (ниже уже вставлены свежие для OSP)
+;   4. Собрать: VS + WDK, x64 Release, Win10+
+;   5. Тест: VM, bcdedit /set testsigning on, devcon install
+;   6. Прод: EV-сертификат + attestation-подпись в Partner Center, затем Inno Setup.
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=MEDIA
+ClassGuid={4d36e96c-e325-11ce-bfc1-08002be10318}
+Provider=%OSP_Provider%
+DriverVer=10/09/2026,1.0.0.0
+CatalogFile=OspVirtualMic.cat
+PnpLockdown=1
+
+[SourceDisksNames]
+1 = %OSP_Disk%,,,,
+
+[SourceDisksFiles]
+OspVirtualMic.sys = 1,,,
+
+[DestinationDirs]
+DefaultDestDir = 12
+OspVirtualMic_CopyFiles = 12
+
+[Manufacturer]
+%OSP_Provider%=OSP_Models,NTamd64,NTARM64
+
+; Device ID должен совпадать с тем, что объявляет твой форк SysVad
+; (см. DeviceEntries / FriendlyName в исходниках sample).
+[OSP_Models.NTamd64]
+%OSP_DeviceDesc%=OspVirtualMic_Install, ROOT\OSP_VIRTUAL_MIC_0001
+
+[OSP_Models.NTARM64]
+%OSP_DeviceDesc%=OspVirtualMic_Install, ROOT\OSP_VIRTUAL_MIC_0001
+
+[OspVirtualMic_Install]
+CopyFiles=OspVirtualMic_CopyFiles
+AddReg=OspVirtualMic_AddReg
+
+[OspVirtualMic_CopyFiles]
+OspVirtualMic.sys
+
+[OspVirtualMic_AddReg]
+HKR,,FriendlyName,,%OSP_DeviceDesc%
+HKR,,DeviceDesc,,%OSP_DeviceDesc%
+
+; Playback-конец (сюда пишет OSP App) и Capture-конец (его выбирает Discord)
+; Реальная топология пинов задается в C++ коде SysVad-форка (topology.cpp/minwavert.cpp),
+; здесь только отображаемые имена.
+[OspVirtualMic_Install.HW]
+AddReg=OspVirtualMic_HW_AddReg
+
+[OspVirtualMic_HW_AddReg]
+HKR,,PlaybackFriendlyName,,%OSP_PlaybackName%
+HKR,,CaptureFriendlyName,,%OSP_CaptureName%
+
+[OspVirtualMic_Install.Services]
+AddService=OspVirtualMic,0x00000002,OspVirtualMic_Service
+
+[OspVirtualMic_Service]
+DisplayName=%OSP_ServiceDesc%
+ServiceType=1
+StartType=3
+ErrorControl=1
+ServiceBinary=%12%\OspVirtualMic.sys
+
+[Strings]
+OSP_Provider     = "OSP OpenSoundPad"
+OSP_DeviceDesc   = "OSP Virtual Microphone"
+OSP_PlaybackName = "OSP Virtual Cable Input"
+OSP_CaptureName  = "OSP Virtual Microphone"
+OSP_ServiceDesc  = "OSP Virtual Audio Driver"
+OSP_Disk         = "OSP Virtual Microphone Install Disk"
+
+; Сгенерированы для этого форка (замени при своем форке при желании):
+; Device GUID: {484DF67B-411B-4FD5-960F-6204E91E316B}
+; Interface GUID: {42B1C579-09C2-45EE-A958-331F14C3C5A2}

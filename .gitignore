@@ -8,3 +8,7 @@ config.json
 build/
 dist/
 *.spec
+# .NET
+bin/
+obj/
+publish/
