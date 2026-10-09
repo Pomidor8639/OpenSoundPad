@@ -27,7 +27,7 @@ public partial class MainWindow : Window
         ConfigPathText.Text = OspConfig.GetFilePath();
 
         BuildPadGrid();
-        RefreshDevices(selectSaved: true);
+        UpdateDeviceDisplay();
         ApplyConfigToUi();
 
         _vuTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
@@ -111,44 +111,58 @@ public partial class MainWindow : Window
         }
     }
 
-    // ---------- devices ----------
+    // ---------- devices (выбор — в окне DevicesWindow) ----------
 
-    private void RefreshDevices(bool selectSaved = false)
+    private static string? FindDeviceName(IEnumerable<OspDevice> list, string? id, string? fallbackContains = null)
     {
-        var inputs = OspEngine.GetInputMicrophones();
-        var cables = OspEngine.GetVirtualCables();
-        var monitors = OspEngine.GetOutputDevices();
+        foreach (var d in list)
+            if (d.Id == id) return d.Name;
+        if (fallbackContains != null)
+            foreach (var d in list)
+                if (d.Name.Contains(fallbackContains, StringComparison.OrdinalIgnoreCase)) return d.Name;
+        foreach (var d in list) return d.Name;
+        return null;
+    }
 
-        InputBox.ItemsSource = inputs;
-        CableBox.ItemsSource = cables;
-        MonitorBox.ItemsSource = monitors;
+    private void UpdateDeviceDisplay()
+    {
+        InputName.Text = FindDeviceName(OspEngine.GetInputMicrophones(), _config.InputDeviceId) ?? "Не выбран";
+        string? cableName = FindDeviceName(OspEngine.GetVirtualCables(), _config.OutputDeviceId);
+        CableName.Text = cableName ?? "Не выбран";
+        MonitorName.Text = FindDeviceName(OspEngine.GetOutputDevices(), _config.MonitorDeviceId) ?? "Не выбран";
+        VirtMicText.Text = cableName != null
+            ? OspEngine.FindVirtualMicName(cableName)
+            : "Кабель не выбран — в Discord нечего выводить";
+    }
 
-        if (inputs.Count > 0) InputBox.SelectedIndex = 0;
-        if (cables.Count > 0) CableBox.SelectedIndex = 0;
-        if (monitors.Count > 0) MonitorBox.SelectedIndex = 0;
-
-        if (selectSaved)
+    private void DevicesBtn_Click(object sender, RoutedEventArgs e)
+    {
+        bool wasRunning = _engine.IsRunning;
+        if (wasRunning) StopEngine();
+        var dlg = new DevicesWindow(_config.InputDeviceId, _config.OutputDeviceId, _config.MonitorDeviceId)
         {
-            SelectById(InputBox, inputs, _config.InputDeviceId);
-            SelectById(CableBox, cables, _config.OutputDeviceId);
-            SelectById(MonitorBox, monitors, _config.MonitorDeviceId);
+            Owner = this,
+        };
+        if (dlg.ShowDialog() == true)
+        {
+            _config.InputDeviceId = dlg.SelectedInputId;
+            _config.OutputDeviceId = dlg.SelectedOutputId;
+            _config.MonitorDeviceId = dlg.SelectedMonitorId;
+            _config.Save();
+            UpdateDeviceDisplay();
         }
-        UpdateVirtMic();
     }
 
-    private static void SelectById(ComboBox box, List<OspDevice> list, string? id)
+    private void SettingsBtn_Click(object sender, RoutedEventArgs e)
     {
-        if (id == null) return;
-        for (int i = 0; i < list.Count; i++)
-            if (list[i].Id == id) { box.SelectedIndex = i; return; }
-    }
-
-    private void UpdateVirtMic()
-    {
-        if (CableBox.SelectedItem is OspDevice dev)
-            VirtMicText.Text = OspEngine.FindVirtualMicName(dev.Name);
-        else
-            VirtMicText.Text = "Кабель не выбран — в Discord нечего выводить";
+        var dlg = new SettingsWindow(_config) { Owner = this };
+        if (dlg.ShowDialog() == true)
+        {
+            _engine.Dsp.InputPregain = _config.InputPregain;
+            _engine.Dsp.GateThreshold = _config.GateThreshold;
+            ApplyConfigToUi();
+            UpdateDeviceDisplay();
+        }
     }
 
     // ---------- config ----------
@@ -220,19 +234,18 @@ public partial class MainWindow : Window
     {
         try
         {
-            if (InputBox.SelectedItem is not OspDevice inp || CableBox.SelectedItem is not OspDevice cable)
+            if (_config.InputDeviceId == null || _config.OutputDeviceId == null)
             {
-                MessageBox.Show("Выберите микрофон и виртуальный кабель.", "OSP",
+                MessageBox.Show("Выберите микрофон и виртуальный кабель (кнопка «Устройства» вверху).", "OSP",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                DevicesBtn_Click(this, new RoutedEventArgs());
+                if (_config.InputDeviceId == null || _config.OutputDeviceId == null) return;
             }
-            var mon = MonitorBox.SelectedItem as OspDevice;
-            _engine.SetDevices(inp.Id, cable.Id, mon?.Id);
-            _config.InputDeviceId = inp.Id;
-            _config.OutputDeviceId = cable.Id;
-            _config.MonitorDeviceId = mon?.Id;
+            _engine.SetDevices(_config.InputDeviceId, _config.OutputDeviceId, _config.MonitorDeviceId);
 
             _engine.Dsp.VolumeGain = (float)(VolumeSlider.Value / 100.0);
+            _engine.Dsp.InputPregain = _config.InputPregain;
+            _engine.Dsp.GateThreshold = _config.GateThreshold;
             _engine.Dsp.SetVoice(SelectedVoice());
             PushParamsToDsp();
             _engine.Pads.SetSampleRate(_engine.Dsp.SampleRate);
@@ -244,12 +257,16 @@ public partial class MainWindow : Window
             _engine.Dsp.SetVoice(SelectedVoice());
             PushParamsToDsp();
             _engine.Dsp.VolumeGain = (float)(VolumeSlider.Value / 100.0);
+            _engine.Dsp.InputPregain = _config.InputPregain;
+            _engine.Dsp.GateThreshold = _config.GateThreshold;
 
+            string inName = FindDeviceName(OspEngine.GetInputMicrophones(), _config.InputDeviceId) ?? "?";
+            string outName = FindDeviceName(OspEngine.GetVirtualCables(), _config.OutputDeviceId) ?? "?";
             StartBtn.IsEnabled = false;
             StopBtn.IsEnabled = true;
-            StatusText.Text = $"В эфире: {inp.Name} → {cable.Name}" +
+            StatusText.Text = $"В эфире: {inName} → {outName}" +
                               (OspDsp.Voices.TryGetValue(SelectedVoice(), out var vn) ? $" • {vn}" : "");
-            UpdateVirtMic();
+            UpdateDeviceDisplay();
         }
         catch (Exception ex)
         {
@@ -265,8 +282,6 @@ public partial class MainWindow : Window
         StopBtn.IsEnabled = false;
         StatusText.Text = "Остановлен";
     }
-
-    private void RefreshBtn_Click(object sender, RoutedEventArgs e) => RefreshDevices();
 
     // ---------- voice UI ----------
 

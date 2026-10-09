@@ -21,6 +21,8 @@ public sealed class OspConfig
     public float BassBoostDb { get; set; } = 6.0f;
     public float RobotMod { get; set; } = 0.0f;
     public float PadGain { get; set; } = 1.0f;
+    public float InputPregain { get; set; } = 2.2f;
+    public float GateThreshold { get; set; } = 0.003f;
     public Dictionary<string, string> PadFiles { get; set; } = new();
 
     public static string GetFilePath()

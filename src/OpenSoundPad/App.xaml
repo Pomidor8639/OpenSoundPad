@@ -4,6 +4,45 @@
              xmlns:local="clr-namespace:OpenSoundPad"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <!-- Единый тёмный стиль кнопок: никаких белых, включая disabled -->
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#23262E"/>
+            <Setter Property="Foreground" Value="#E8EAF0"/>
+            <Setter Property="BorderBrush" Value="#353A45"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#2E333D"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#191C22"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bd" Property="Background" Value="#191C22"/>
+                                <Setter Property="Foreground" Value="#5A606C"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Тёмные выпадающие списки -->
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="Background" Value="#23262E"/>
+            <Setter Property="Foreground" Value="#E8EAF0"/>
+        </Style>
     </Application.Resources>
 </Application>
