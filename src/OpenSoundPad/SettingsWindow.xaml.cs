@@ -57,8 +57,20 @@ public partial class SettingsWindow : Window
         CfgLabel.Text = Loc.SetConfigFile;
         OpenFolderBtnText.Text = Loc.OpenFolder;
         ResetBtnText.Text = Loc.ResetAll;
+        AboutGroup.Header = Loc.SetAbout;
+        AppDescText.Text = Loc.SetAboutDesc;
         CancelBtn.Content = Loc.Cancel;
         OkBtn.Content = Loc.Ok;
+    }
+
+    private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            e.Handled = true;
+        }
+        catch { }
     }
 
     private void LangBox_Changed(object sender, SelectionChangedEventArgs e)

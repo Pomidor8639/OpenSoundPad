@@ -154,6 +154,10 @@ public static class Loc
     public static string ResetAsk => En
         ? "Reset all settings (voices, volumes, devices)?\nPad files are kept."
         : "Сбросить все настройки (голоса, громкости, устройства)?\nФайлы падов сохранятся.";
+    public static string SetAbout => En ? "About OpenSoundPad" : "О приложении";
+    public static string SetAboutDesc => En
+        ? "Real-time voice changer and soundpad with direct routing to Windows virtual microphone."
+        : "Голосовой модулятор реального времени и саундпад с выводом в виртуальный микрофон Windows.";
     public static string Ok => "OK";
     public static string Cancel => En ? "Cancel" : "Отмена";
 }

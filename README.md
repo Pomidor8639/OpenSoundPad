@@ -4,7 +4,7 @@
 
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
-[![Version](https://img.shields.io/badge/Version-v1.6.0-10B981?style=for-the-badge)](https://github.com/Pomidor8639/OpenSoundPad/releases)
+[![Version](https://img.shields.io/badge/Version-v1.7.0-10B981?style=for-the-badge)](https://github.com/Pomidor8639/OpenSoundPad/releases)
 [![NAudio](https://img.shields.io/badge/NAudio-WASAPI-FF6F00?style=for-the-badge)](https://github.com/naudio/NAudio)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
@@ -13,6 +13,20 @@
 [Скачать релиз](https://github.com/Pomidor8639/OpenSoundPad/releases) • [Возможности](#возможности) • [Управление](#управление-и-горячие-клавиши) • [Сборка](#сборка-из-исходников)
 
 </div>
+
+---
+
+## Что нового в версии 1.7.0
+
+- **Полноценный инсталлятор (OpenSoundPad-Setup-v1.7.0.exe)**:
+  - Единый мастер установки приложения со всеми зависимостями в один клик.
+  - Автоматическое создание ярлыка на Рабочем столе с официальной иконкой приложения.
+  - Создание ярлыков в меню «Пуск» (приложение, панель управления и деинсталлятор).
+  - Встроенный пакет драйверов **VB-Audio Virtual Cable**: мастер предлагает установить и зарегистрировать виртуальный аудиокабель прямо во время установки для Discord, CS2, Telegram и других программ.
+- **Раздел «О приложении» в окне настроек**:
+  - В окно «Настройки» добавлен блок «О приложении» с версией программы и описанием.
+  - Добавлена кликабельная ссылка на GitHub-репозиторий проекта (`https://github.com/Pomidor8639/OpenSoundPad`) с открытием в браузере в один клик.
+  - Полная поддержка двуязычной локализации (Русский / English).
 
 ---
 
@@ -132,20 +146,29 @@
 
 ## Быстрый старт
 
-1. Скачайте и запустите `OpenSoundPad.exe`.
-2. В верхнем меню откройте **«Настройки»** (или меню *Настройки* → *Настройки…*).
-3. Выберите:
+### Вариант 1. Установка через инсталлятор (рекомендуется)
+1. Скачайте `OpenSoundPad-Setup-v1.7.0.exe` из раздела [Релизы](https://github.com/Pomidor8639/OpenSoundPad/releases).
+2. Запустите установку: мастер сам распакует файлы, создаст ярлык с иконкой на Рабочем столе и предложит установить виртуальный аудиокабель VB-CABLE.
+3. Запустите приложение с Рабочего стола или меню «Пуск».
+
+### Вариант 2. Портативная версия (без установки)
+1. Скачайте автономный файл `OpenSoundPad.exe`.
+2. Запустите приложение (не требует установки).
+
+### Настройка звука:
+1. В верхнем меню откройте **«Настройки»** (или меню *Настройки* → *Настройки…*).
+2. Выберите:
    - **Микрофон:** ваше реальное устройство ввода (физический микрофон или гарнитура).
    - **Виртуальный кабель:** выход в систему (`CABLE Input (VB-Audio Virtual Cable)`).
    - **Наушники (монитор):** ваши реальные наушники или колонки.
-4. Нажмите кнопку **«▶ Старт»** в верхней панели.
-5. В Discord / Telegram / игре в настройках звука выберите микрофон: `CABLE Output (VB-Audio Virtual Cable)`.
+3. Нажмите кнопку **«▶ Старт»** в верхней панели.
+4. В Discord / Telegram / игре в настройках звука выберите микрофон: `CABLE Output (VB-Audio Virtual Cable)`.
 
 ---
 
 ## Сборка из исходников
 
-Требуется установленный [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0).
+Требуется установленный [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) и Inno Setup 6 (для сборки инсталлятора).
 
 ```bash
 git clone https://github.com/Pomidor8639/OpenSoundPad.git
@@ -154,6 +177,8 @@ cd OpenSoundPad
 dotnet run --project src/OpenSoundPad/OpenSoundPad.csproj
 
 dotnet publish src/OpenSoundPad/OpenSoundPad.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -o publish
+
+iscc installer/OpenSoundPad.iss
 ```
 
 ---
