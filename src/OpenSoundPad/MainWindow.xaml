@@ -106,43 +106,28 @@
 
                     <Border Width="1" Background="{StaticResource BorderDark}" Margin="12,3"/>
 
-                    <!-- Быстрые действия для режима «Войсмод» -->
-                    <StackPanel x:Name="VoiceToolbarActions" Orientation="Horizontal">
-                        <Button x:Name="TbEffect" MinWidth="130" Click="EffectBtn_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="{StaticResource GeoWand}" Width="12" Height="12" Style="{StaticResource WhiteIcon}" Margin="0,0,6,0"/>
-                                <TextBlock x:Name="TbEffectText" Text="Эффект выкл (T)" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Button x:Name="TbMute" MinWidth="95" Click="MuteBtn_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="{StaticResource GeoMute}" Width="12" Height="12" Style="{StaticResource WhiteIcon}" Margin="0,0,6,0"/>
-                                <TextBlock x:Name="TbMuteText" Text="Мут (M)" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Button x:Name="TbMonitor" MinWidth="115" Click="MonitorBtn_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="{StaticResource GeoHeadphones}" Width="12" Height="12" Style="{StaticResource WhiteIcon}" Margin="0,0,6,0"/>
-                                <TextBlock x:Name="TbMonitorText" Text="Монитор (L)" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
+                    <!-- Кнопка «Эффект» (только для режима «Войсмод») -->
+                    <Button x:Name="TbEffect" MinWidth="130" Margin="0,0,4,0" Click="EffectBtn_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Data="{StaticResource GeoWand}" Width="12" Height="12" Style="{StaticResource WhiteIcon}" Margin="0,0,6,0"/>
+                            <TextBlock x:Name="TbEffectText" Text="Эффект выкл (T)" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
 
-                    <!-- Быстрые действия для режима «Саундпад» -->
-                    <StackPanel x:Name="SoundpadToolbarActions" Orientation="Horizontal" Visibility="Collapsed">
-                        <Button x:Name="TbPadsStop" Padding="12,6" Click="StopPadsBtn_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="{StaticResource GeoStop}" Width="10" Height="10" Style="{StaticResource WhiteIcon}" Margin="0,0,6,0"/>
-                                <TextBlock x:Name="TbPadsStopText" Text="Стоп всех падов" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Button x:Name="TbPadMonitor" MinWidth="140" Click="MonitorBtn_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="{StaticResource GeoHeadphones}" Width="12" Height="12" Style="{StaticResource WhiteIcon}" Margin="0,0,6,0"/>
-                                <TextBlock x:Name="TbPadMonitorText" Text="Монитор падов (L)" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
+                    <!-- Общие кнопки для обоих режимов: Мут и Монитор (ЕДИНСТВЕННЫЙ МОНИТОР В ПРОГРАММЕ) -->
+                    <Button x:Name="TbMute" MinWidth="95" Margin="0,0,4,0" Click="MuteBtn_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Data="{StaticResource GeoMute}" Width="12" Height="12" Style="{StaticResource WhiteIcon}" Margin="0,0,6,0"/>
+                            <TextBlock x:Name="TbMuteText" Text="Мут (M)" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="TbMonitor" MinWidth="115" Click="MonitorBtn_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Data="{StaticResource GeoHeadphones}" Width="12" Height="12" Style="{StaticResource WhiteIcon}" Margin="0,0,6,0"/>
+                            <TextBlock x:Name="TbMonitorText" Text="Монитор (L)" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
 
                 <!-- Справа: Настройки -->
@@ -405,6 +390,8 @@
                                   Drop="PadsView_Drop"
                                   DragOver="PadsView_DragOver"
                                   MouseDoubleClick="PadsView_DoubleClick"
+                                  PreviewMouseRightButtonDown="PadsView_PreviewMouseRightButtonDown"
+                                  ContextMenuOpening="PadsView_ContextMenuOpening"
                                   KeyDown="PadsView_KeyDown">
                             <ListView.ContextMenu>
                                 <ContextMenu>
@@ -424,9 +411,15 @@
                                             <Path Data="{StaticResource GeoPlus}" Width="11" Height="11" Style="{StaticResource WhiteIcon}"/>
                                         </MenuItem.Icon>
                                     </MenuItem>
-                                    <MenuItem x:Name="CtxClear" Header="Удалить из списка" Click="CtxClear_Click">
+                                    <Separator/>
+                                    <MenuItem x:Name="CtxDelete" Header="Удалить из списка (Del)" Click="CtxClear_Click">
                                         <MenuItem.Icon>
                                             <Path Data="{StaticResource GeoTrash}" Width="11" Height="11" Style="{StaticResource WhiteIcon}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem x:Name="CtxClearAll" Header="Очистить весь список" Click="ClearAllPads_Click">
+                                        <MenuItem.Icon>
+                                            <Path Data="{StaticResource GeoAlert}" Width="11" Height="11" Style="{StaticResource WhiteIcon}"/>
                                         </MenuItem.Icon>
                                     </MenuItem>
                                 </ContextMenu>
@@ -465,30 +458,18 @@
             <!-- ЕДИНАЯ НИЖНЯЯ ПАНЕЛЬ САУНДПАДА -->
             <GroupBox Grid.Row="1" x:Name="PadControlGroup" Header="Управление воспроизведением" Margin="0">
                 <DockPanel LastChildFill="False">
-                    <!-- Слева: Добавить, Удалить, Очистить все -->
+                    <!-- Слева: Добавить звук (Удаление и очистка теперь через ПКМ по музыке) -->
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center">
-                        <Button x:Name="AddPadBtn" Padding="12,6" FontWeight="SemiBold" Click="AddPadBtn_Click"
+                        <Button x:Name="AddPadBtn" Padding="14,7" FontWeight="SemiBold" Click="AddPadBtn_Click"
                                 Background="{StaticResource AccentGreenDim}" BorderBrush="{StaticResource AccentGreen}">
                             <StackPanel Orientation="Horizontal">
                                 <Path Data="{StaticResource GeoPlus}" Width="11" Height="11" Style="{StaticResource GreenIcon}" Margin="0,0,6,0"/>
                                 <TextBlock x:Name="AddPadBtnText" Text="Добавить звук…" Foreground="{StaticResource AccentGreen}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button x:Name="RemovePadBtn" Padding="10,6" Margin="4,0,0,0" Click="CtxClear_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="{StaticResource GeoTrash}" Width="11" Height="11" Style="{StaticResource WhiteIcon}" Margin="0,0,5,0"/>
-                                <TextBlock x:Name="RemovePadBtnText" Text="Удалить" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Button x:Name="ClearAllPadsBtn" Padding="10,6" Margin="4,0,0,0" Click="ClearAllPads_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="{StaticResource GeoAlert}" Width="11" Height="11" Style="{StaticResource WhiteIcon}" Margin="0,0,5,0"/>
-                                <TextBlock x:Name="ClearAllPadsText" Text="Очистить всё" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
                     </StackPanel>
 
-                    <!-- Справа: Стоп всех + Монитор наушников + Индикатор выхода -->
+                    <!-- Справа: Индикатор выхода + Стоп всех сэмплов (ЕДИНСТВЕННЫЙ «СТОП ВСЕХ» В ПРОГРАММЕ) -->
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
                         <!-- Индикатор звука выхода саундпада -->
                         <Border Background="{StaticResource BgDarkest}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="5" Padding="10,4" Margin="0,0,10,0">
@@ -498,16 +479,8 @@
                             </StackPanel>
                         </Border>
 
-                        <!-- Слушать в наушниках -->
-                        <Button x:Name="PadMonitorBtn" Padding="10,6" Margin="0,0,8,0" Click="MonitorBtn_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="{StaticResource GeoHeadphones}" Width="12" Height="12" Style="{StaticResource WhiteIcon}" Margin="0,0,5,0"/>
-                                <TextBlock x:Name="PadMonitorBtnText" Text="Монитор (L)" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-
-                        <!-- Стоп всех сэмплов (выделенная кнопка) -->
-                        <Button x:Name="StopPadsBtn" Padding="12,6" FontWeight="SemiBold" Click="StopPadsBtn_Click">
+                        <!-- Стоп всех сэмплов -->
+                        <Button x:Name="StopPadsBtn" Padding="14,7" FontWeight="SemiBold" Click="StopPadsBtn_Click">
                             <StackPanel Orientation="Horizontal">
                                 <Path Data="{StaticResource GeoStop}" Width="10" Height="10" Style="{StaticResource WhiteIcon}" Margin="0,0,6,0"/>
                                 <TextBlock x:Name="StopPadsBtnText" Text="Стоп всех (Esc)" VerticalAlignment="Center"/>

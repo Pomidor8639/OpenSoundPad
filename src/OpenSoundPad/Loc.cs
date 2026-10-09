@@ -31,8 +31,8 @@ public static class Loc
     public static string PlayingCount(int count) => En ? $"Active: {count}" : $"Играет: {count}";
     public static string SoundpadRouting => En ? "Routing to Cable:" : "Трансляция в кабель:";
     public static string SoundpadHint => En
-        ? "Drag & drop audio (.mp3, .wav, .flac, .ogg) or click «Add sound»"
-        : "Перетащите аудио (.mp3, .wav, .flac, .ogg) или нажмите «Добавить звук»";
+        ? "Right-click track to remove / clear list • Drag files here or click «+ Add sound»"
+        : "Правый клик по треку: удалить / очистить список • Перетащите файлы сюда или нажмите «+ Добавить звук»";
     public static string NoSoundsYet => En
         ? "No sounds yet. Click «+ Add sound» or drag & drop audio files here."
         : "Звуки пока не добавлены. Нажмите «+ Добавить звук» или перетащите аудиофайлы сюда.";

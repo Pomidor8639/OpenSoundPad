@@ -84,8 +84,7 @@ public partial class MainWindow : Window
         VoiceModeGrid.Visibility = isPad ? Visibility.Collapsed : Visibility.Visible;
         SoundpadModeGrid.Visibility = isPad ? Visibility.Visible : Visibility.Collapsed;
 
-        VoiceToolbarActions.Visibility = isPad ? Visibility.Collapsed : Visibility.Visible;
-        SoundpadToolbarActions.Visibility = isPad ? Visibility.Visible : Visibility.Collapsed;
+        TbEffect.Visibility = isPad ? Visibility.Collapsed : Visibility.Visible;
     }
 
     // ---------- язык и интерфейс ----------
@@ -105,7 +104,6 @@ public partial class MainWindow : Window
 
         TbStartText.Text = Loc.TbStart;
         TbStopText.Text = Loc.TbStop;
-        TbPadsStopText.Text = Loc.StopPads;
         TbSettingsText.Text = Loc.MenuSettings + "…";
         UpdateToggleButtons();
         UpdateStatusBadge();
@@ -133,8 +131,6 @@ public partial class MainWindow : Window
         PadDropHint.Text = Loc.SoundpadHint;
         PadHotkeyHint.Text = Loc.PadHotkeysHint;
         AddPadBtnText.Text = Loc.AddSound;
-        RemovePadBtnText.Text = Loc.RemoveSound;
-        ClearAllPadsText.Text = Loc.ClearAllPads;
         EmptyPadsText.Text = Loc.NoSoundsYet;
 
         ColNum.Header = Loc.ColNum;
@@ -144,7 +140,8 @@ public partial class MainWindow : Window
         CtxPlay.Header = Loc.PlayPad;
         CtxStop.Header = Loc.StopPad;
         CtxAdd.Header = Loc.AddSound;
-        CtxClear.Header = Loc.RemoveSound;
+        CtxDelete.Header = Loc.RemoveSound + " (Del)";
+        CtxClearAll.Header = Loc.ClearAllPads;
         PadsView.ToolTip = Loc.PlayTip;
 
         LevelInLabel.Text = Loc.LevelIn;
@@ -189,8 +186,6 @@ public partial class MainWindow : Window
         TbEffectText.Text = _engine.Dsp.Bypass ? Loc.TbEffectOn : Loc.TbEffectOff;
         TbMuteText.Text = _engine.Dsp.Muted ? Loc.TbUnmute : Loc.TbMute;
         TbMonitorText.Text = _engine.IsMonitoring ? Loc.TbMonitorOn : Loc.TbMonitor;
-        PadMonitorBtnText.Text = _engine.IsMonitoring ? Loc.TbMonitorOn : Loc.TbMonitor;
-        TbPadMonitorText.Text = _engine.IsMonitoring ? Loc.TbMonitorOn : Loc.TbMonitor;
 
         // Визуальная подсветка активных состояний (True Black стиль)
         TbMute.BorderBrush = _engine.Dsp.Muted
@@ -201,7 +196,6 @@ public partial class MainWindow : Window
             ? new SolidColorBrush(Color.FromRgb(0x10, 0xB9, 0x81))
             : (Brush)FindResource("BorderDark");
         TbMonitor.BorderBrush = monBrush;
-        PadMonitorBtn.BorderBrush = monBrush;
     }
 
     // ---------- голоса ----------
@@ -354,6 +348,32 @@ public partial class MainWindow : Window
             CtxClear_Click(sender, e);
             e.Handled = true;
         }
+    }
+
+    private void PadsView_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        var dep = e.OriginalSource as DependencyObject;
+        while (dep != null && dep != PadsView)
+        {
+            if (dep is ListViewItem item)
+            {
+                item.IsSelected = true;
+                item.Focus();
+                break;
+            }
+            dep = VisualTreeHelper.GetParent(dep);
+        }
+    }
+
+    private void PadsView_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+    {
+        bool hasSelection = PadsView.SelectedIndex >= 0;
+        bool hasPads = _padRows.Count > 0;
+
+        CtxPlay.IsEnabled = hasSelection;
+        CtxStop.IsEnabled = hasSelection && PadsView.SelectedIndex < _padRows.Count && _padRows[PadsView.SelectedIndex].IsPlaying;
+        CtxDelete.IsEnabled = hasSelection;
+        CtxClearAll.IsEnabled = hasPads;
     }
 
     private void CtxPlay_Click(object sender, RoutedEventArgs e)
