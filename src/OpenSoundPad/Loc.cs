@@ -5,6 +5,13 @@ public static class Loc
 {
     public static string Lang = "ru";
     private static bool En => Lang == "en";
+    public static bool IsRu => Lang != "en";
+
+    // Окно
+    public static string WinMinimize => En ? "Minimize" : "Свернуть";
+    public static string WinMaximize => En ? "Maximize" : "Развернуть";
+    public static string WinRestore => En ? "Restore" : "Восстановить";
+    public static string WinClose => En ? "Close" : "Закрыть";
 
     // Меню
     public static string MenuFile => En ? "File" : "Файл";

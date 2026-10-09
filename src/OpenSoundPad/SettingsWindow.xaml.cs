@@ -214,4 +214,27 @@ public partial class SettingsWindow : Window
         _config.Save();
         DialogResult = true;
     }
+
+    private void BtnClose_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+
+    [System.Runtime.InteropServices.DllImport("dwmapi.dll", PreserveSig = true)]
+    private static extern int DwmSetWindowAttribute(System.IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
+    protected override void OnSourceInitialized(System.EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+        try
+        {
+            var helper = new System.Windows.Interop.WindowInteropHelper(this);
+            int darkMode = 1;
+            DwmSetWindowAttribute(helper.Handle, 20, ref darkMode, sizeof(int));
+            DwmSetWindowAttribute(helper.Handle, 19, ref darkMode, sizeof(int));
+        }
+        catch
+        {
+        }
+    }
 }

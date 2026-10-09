@@ -4,7 +4,7 @@
 
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
-[![Version](https://img.shields.io/badge/Version-v1.8.1-10B981?style=for-the-badge)](https://github.com/Pomidor8639/OpenSoundPad/releases)
+[![Version](https://img.shields.io/badge/Version-v1.9.0-10B981?style=for-the-badge)](https://github.com/Pomidor8639/OpenSoundPad/releases)
 [![NAudio](https://img.shields.io/badge/NAudio-WASAPI-FF6F00?style=for-the-badge)](https://github.com/naudio/NAudio)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
@@ -13,6 +13,17 @@
 [Скачать релиз](https://github.com/Pomidor8639/OpenSoundPad/releases) • [Возможности](#возможности) • [Управление](#управление-и-горячие-клавиши) • [Сборка](#сборка-из-исходников)
 
 </div>
+
+---
+
+## Что нового в версии 1.9.0
+
+- **Фирменный темный заголовок окна (Custom Dark TitleBar)**:
+  - Стандартная светлая полоса Windows с системными кнопками заменена на аккуратный темный заголовок в общем стиле приложения.
+  - Кастомные векторные кнопки управления окном (Свернуть, Развернуть/Восстановить, Закрыть с фирменными эффектами наведения).
+  - В заголовок интегрированы иконка приложения, название OSP и главное меню («Файл», «Настройки», «Справка»).
+  - Полная поддержка системного перетаскивания, двойного клика для максимизации и Windows Aero Snap.
+  - Кастомный заголовок также применен к диалоговому окну «Настройки».
 
 ---
 

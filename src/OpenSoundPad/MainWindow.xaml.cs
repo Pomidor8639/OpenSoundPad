@@ -9,6 +9,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Runtime.InteropServices;
+using System.Windows.Interop;
 using Microsoft.Win32;
 using OpenSoundPad.Audio;
 
@@ -26,6 +28,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        StateChanged += MainWindow_StateChanged;
         _config = OspConfig.Load();
         Loc.Lang = _config.Language == "en" ? "en" : "ru";
 
@@ -98,6 +101,10 @@ public partial class MainWindow : Window
         MiSettings.Header = Loc.MenuOpenSettings;
         HelpMenu.Header = Loc.MenuHelp;
         MiAbout.Header = Loc.MenuAbout;
+
+        BtnMinimize.ToolTip = Loc.WinMinimize;
+        BtnMaximize.ToolTip = WindowState == WindowState.Maximized ? Loc.WinRestore : Loc.WinMaximize;
+        BtnClose.ToolTip = Loc.WinClose;
 
         ModeVoiceText.Text = Loc.ModeVoice;
         ModePadText.Text = Loc.ModePad;
@@ -861,5 +868,56 @@ public partial class MainWindow : Window
             case Key.L: ToggleMonitor(); break;
             case Key.R: ToggleRepeat(); break;
         }
+    }
+
+    [DllImport("dwmapi.dll", PreserveSig = true)]
+    private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+        try
+        {
+            var helper = new WindowInteropHelper(this);
+            int darkMode = 1;
+            DwmSetWindowAttribute(helper.Handle, 20, ref darkMode, sizeof(int));
+            DwmSetWindowAttribute(helper.Handle, 19, ref darkMode, sizeof(int));
+        }
+        catch
+        {
+        }
+    }
+
+    private void MainWindow_StateChanged(object? sender, EventArgs e)
+    {
+        if (WindowState == WindowState.Maximized)
+        {
+            if (FindResource("GeoWinRestore") is Geometry geo)
+                MaximizePath.Data = geo;
+            BtnMaximize.ToolTip = Loc.IsRu ? "Восстановить" : "Restore";
+            MainRootGrid.Margin = new Thickness(7);
+        }
+        else
+        {
+            if (FindResource("GeoWinMax") is Geometry geo)
+                MaximizePath.Data = geo;
+            BtnMaximize.ToolTip = Loc.IsRu ? "Развернуть" : "Maximize";
+            MainRootGrid.Margin = new Thickness(0);
+        }
+    }
+
+    private void BtnMinimize_Click(object sender, RoutedEventArgs e)
+    {
+        WindowState = WindowState.Minimized;
+    }
+
+    private void BtnMaximize_Click(object sender, RoutedEventArgs e)
+    {
+        WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+    }
+
+    private void BtnClose_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
     }
 }

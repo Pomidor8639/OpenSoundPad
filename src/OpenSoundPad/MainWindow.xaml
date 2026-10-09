@@ -5,51 +5,86 @@
         Title="OSP — OpenSoundPad" Height="730" Width="1140"
         MinHeight="620" MinWidth="960"
         Background="{StaticResource BgWindow}" Foreground="{StaticResource TextPrimary}"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        Icon="pack://application:,,,/app_icon.ico">
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="{StaticResource TextMuted}"/>
         </Style>
     </Window.Resources>
 
-    <Grid Background="{StaticResource BgWindow}">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="36"
+                      ResizeBorderThickness="6"
+                      GlassFrameThickness="0"
+                      CornerRadius="0"
+                      UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+
+    <Grid x:Name="MainRootGrid" Background="{StaticResource BgWindow}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> <!-- 0: Главное меню -->
+            <RowDefinition Height="Auto"/> <!-- 0: Кастомный заголовок окна (TitleBar) + Меню -->
             <RowDefinition Height="Auto"/> <!-- 1: Верхняя панель управления и переключения режима -->
             <RowDefinition Height="*"/>    <!-- 2: Рабочая область выбранного режима -->
             <RowDefinition Height="Auto"/> <!-- 3: Статусбар -->
         </Grid.RowDefinitions>
 
-        <!-- Меню программы -->
-        <Menu Grid.Row="0" Background="{StaticResource BgDarkest}" BorderBrush="{StaticResource BorderDark}" BorderThickness="0,0,0,1">
-            <MenuItem x:Name="FileMenu" Header="Файл">
-                <MenuItem x:Name="MiOpenFolder" Header="Открыть папку конфига" Click="MiOpenFolder_Click">
-                    <MenuItem.Icon>
-                        <Path Data="{StaticResource GeoFolder}" Width="12" Height="12" Style="{StaticResource WhiteIcon}"/>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <Separator/>
-                <MenuItem x:Name="MiExit" Header="Выход" Click="MiExit_Click">
-                    <MenuItem.Icon>
-                        <Path Data="{StaticResource GeoClose}" Width="11" Height="11" Style="{StaticResource WhiteIcon}"/>
-                    </MenuItem.Icon>
-                </MenuItem>
-            </MenuItem>
-            <MenuItem x:Name="SettingsMenu" Header="Настройки">
-                <MenuItem x:Name="MiSettings" Header="Настройки…" Click="MiSettings_Click">
-                    <MenuItem.Icon>
-                        <Path Data="{StaticResource GeoSettings}" Width="12" Height="12" Style="{StaticResource WhiteIcon}"/>
-                    </MenuItem.Icon>
-                </MenuItem>
-            </MenuItem>
-            <MenuItem x:Name="HelpMenu" Header="Справка">
-                <MenuItem x:Name="MiAbout" Header="О программе" Click="MiAbout_Click">
-                    <MenuItem.Icon>
-                        <Path Data="{StaticResource GeoInfo}" Width="12" Height="12" Style="{StaticResource WhiteIcon}"/>
-                    </MenuItem.Icon>
-                </MenuItem>
-            </MenuItem>
-        </Menu>
+        <!-- Кастомный верхний заголовок окна (TitleBar) -->
+        <Border Grid.Row="0" Background="{StaticResource BgDarkest}" BorderBrush="{StaticResource BorderDark}" BorderThickness="0,0,0,1" Height="36">
+            <DockPanel LastChildFill="True">
+                <!-- Справа: Кнопки управления окном (Свернуть, Развернуть/Восстановить, Закрыть) -->
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" WindowChrome.IsHitTestVisibleInChrome="True" VerticalAlignment="Stretch">
+                    <Button x:Name="BtnMinimize" Style="{StaticResource CaptionBtnStyle}" Click="BtnMinimize_Click" ToolTip="Свернуть">
+                        <Path Data="{StaticResource GeoWinMin}" Width="10" Height="10" Stroke="{StaticResource TextMuted}" StrokeThickness="1.2"/>
+                    </Button>
+                    <Button x:Name="BtnMaximize" Style="{StaticResource CaptionBtnStyle}" Click="BtnMaximize_Click" ToolTip="Развернуть">
+                        <Path x:Name="MaximizePath" Data="{StaticResource GeoWinMax}" Width="10" Height="10" Stroke="{StaticResource TextMuted}" StrokeThickness="1.2" Fill="Transparent"/>
+                    </Button>
+                    <Button x:Name="BtnClose" Style="{StaticResource CaptionCloseBtnStyle}" Click="BtnClose_Click" ToolTip="Закрыть">
+                        <Path Data="{StaticResource GeoWinClose}" Width="10" Height="10" Stroke="{StaticResource TextMuted}" StrokeThickness="1.2"/>
+                    </Button>
+                </StackPanel>
+
+                <!-- Слева: Логотип приложения + Название -->
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="10,0,6,0">
+                    <Image Source="pack://application:,,,/app_icon.ico" Width="16" Height="16" Margin="0,0,8,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <TextBlock Text="OSP" FontWeight="Bold" FontSize="12" Foreground="{StaticResource AccentGreen}" VerticalAlignment="Center"/>
+                    <TextBlock Text=" — " FontSize="12" Foreground="{StaticResource TextSubtle}" VerticalAlignment="Center"/>
+                    <TextBlock Text="OpenSoundPad" FontSize="12" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                </StackPanel>
+
+                <!-- Меню программы (Файл, Настройки, Справка) на той же высоте -->
+                <Menu Background="Transparent" VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True" Margin="0">
+                    <MenuItem x:Name="FileMenu" Header="Файл" Padding="8,4">
+                        <MenuItem x:Name="MiOpenFolder" Header="Открыть папку конфига" Click="MiOpenFolder_Click">
+                            <MenuItem.Icon>
+                                <Path Data="{StaticResource GeoFolder}" Width="12" Height="12" Style="{StaticResource WhiteIcon}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator/>
+                        <MenuItem x:Name="MiExit" Header="Выход" Click="MiExit_Click">
+                            <MenuItem.Icon>
+                                <Path Data="{StaticResource GeoClose}" Width="11" Height="11" Style="{StaticResource WhiteIcon}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                    <MenuItem x:Name="SettingsMenu" Header="Настройки" Padding="8,4">
+                        <MenuItem x:Name="MiSettings" Header="Настройки…" Click="MiSettings_Click">
+                            <MenuItem.Icon>
+                                <Path Data="{StaticResource GeoSettings}" Width="12" Height="12" Style="{StaticResource WhiteIcon}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                    <MenuItem x:Name="HelpMenu" Header="Справка" Padding="8,4">
+                        <MenuItem x:Name="MiAbout" Header="О программе" Click="MiAbout_Click">
+                            <MenuItem.Icon>
+                                <Path Data="{StaticResource GeoInfo}" Width="12" Height="12" Style="{StaticResource WhiteIcon}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                </Menu>
+            </DockPanel>
+        </Border>
 
         <!-- Верхняя панель управления (Toolbar) -->
         <Border Grid.Row="1" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderDark}" BorderThickness="0,0,0,1" Padding="12,7">
