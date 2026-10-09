@@ -139,10 +139,12 @@ public partial class MainWindow : Window
         ColKey.Header = Loc.ColKey;
         CtxPlay.Header = Loc.PlayPad;
         CtxStop.Header = Loc.StopPad;
+        CtxRepeat.Header = Loc.Lang == "en" ? "Loop / Repeat (R)" : "Зациклить / Повтор (R)";
         CtxAdd.Header = Loc.AddSound;
         CtxDelete.Header = Loc.RemoveSound + " (Del)";
         CtxClearAll.Header = Loc.ClearAllPads;
         PadsView.ToolTip = Loc.PlayTip;
+        UpdateRepeatButtonUi();
 
         LevelInLabel.Text = Loc.LevelIn;
         LevelOutLabel.Text = Loc.LevelOut;
@@ -372,6 +374,7 @@ public partial class MainWindow : Window
 
         CtxPlay.IsEnabled = hasSelection;
         CtxStop.IsEnabled = hasSelection && PadsView.SelectedIndex < _padRows.Count && _padRows[PadsView.SelectedIndex].IsPlaying;
+        CtxRepeat.IsEnabled = hasSelection;
         CtxDelete.IsEnabled = hasSelection;
         CtxClearAll.IsEnabled = hasPads;
     }
@@ -385,7 +388,105 @@ public partial class MainWindow : Window
     private void CtxStop_Click(object sender, RoutedEventArgs e)
     {
         int idx = SelectedPad();
-        if (idx >= 0) _engine.Pads.StopPad(idx);
+        if (idx >= 0)
+        {
+            _engine.Pads.StopPad(idx);
+            if (!_engine.Pads.IsAnyLooping())
+                SetRepeatState(false);
+        }
+    }
+
+    // ---------- кнопка и логика повтора (Repeat / Loop) ----------
+
+    private bool _isRepeatActive;
+    private DateTime _repeatMouseDownTime;
+    private bool _wasActiveBeforeMouseDown;
+
+    private void RepeatPadBtn_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        _repeatMouseDownTime = DateTime.UtcNow;
+        _wasActiveBeforeMouseDown = _isRepeatActive;
+        if (!_isRepeatActive)
+        {
+            SetRepeatState(true);
+        }
+    }
+
+    private void RepeatPadBtn_MouseUp(object sender, MouseButtonEventArgs e)
+    {
+        double holdDuration = (DateTime.UtcNow - _repeatMouseDownTime).TotalMilliseconds;
+        if (holdDuration > 350)
+        {
+            // Если кнопку зажали и удерживали более 350мс — отпускание выключает повтор
+            SetRepeatState(false);
+            e.Handled = true;
+        }
+    }
+
+    private void RepeatPadBtn_Click(object sender, RoutedEventArgs e)
+    {
+        // Короткий клик: если до клика кнопка уже была активна, выключаем её
+        if (_wasActiveBeforeMouseDown)
+        {
+            SetRepeatState(false);
+        }
+    }
+
+    private void ToggleRepeat()
+    {
+        SetRepeatState(!_isRepeatActive);
+    }
+
+    private void CtxRepeat_Click(object sender, RoutedEventArgs e)
+    {
+        ToggleRepeat();
+    }
+
+    private void SetRepeatState(bool active)
+    {
+        _isRepeatActive = active;
+
+        int sel = SelectedPad();
+        if (_isRepeatActive)
+        {
+            if (sel >= 0 && sel < _engine.Pads.PadCount)
+            {
+                _engine.Pads.Trigger(sel, loop: true);
+            }
+            else if (_engine.Pads.PadCount > 0)
+            {
+                PadsView.SelectedIndex = 0;
+                _engine.Pads.Trigger(0, loop: true);
+            }
+        }
+        else
+        {
+            _engine.Pads.StopLooping();
+        }
+
+        UpdateRepeatButtonUi();
+    }
+
+    private void UpdateRepeatButtonUi()
+    {
+        if (RepeatPadBtn == null || RepeatPadBtnText == null || RepeatIcon == null) return;
+
+        if (_isRepeatActive)
+        {
+            RepeatPadBtn.Background = (Brush)FindResource("AccentGreenDim");
+            RepeatPadBtn.BorderBrush = (Brush)FindResource("AccentGreen");
+            RepeatIcon.Style = (Style)FindResource("GreenIcon");
+            RepeatPadBtnText.Foreground = (Brush)FindResource("AccentGreen");
+            RepeatPadBtnText.Text = Loc.Lang == "en" ? "Loop: ON (R)" : "Повтор: ВКЛ (R)";
+        }
+        else
+        {
+            RepeatPadBtn.Background = (Brush)FindResource("BgInput");
+            RepeatPadBtn.BorderBrush = (Brush)FindResource("BorderDark");
+            RepeatIcon.Style = (Style)FindResource("WhiteIcon");
+            RepeatPadBtnText.Foreground = (Brush)FindResource("TextPrimary");
+            RepeatPadBtnText.Text = Loc.Lang == "en" ? "Loop (R)" : "Повтор (R)";
+        }
     }
 
     private void AddPadBtn_Click(object sender, RoutedEventArgs e)
@@ -686,7 +787,11 @@ public partial class MainWindow : Window
     private void EffectBtn_Click(object sender, RoutedEventArgs e) => ToggleEffect();
     private void MuteBtn_Click(object sender, RoutedEventArgs e) => ToggleMute();
     private void MonitorBtn_Click(object sender, RoutedEventArgs e) => ToggleMonitor();
-    private void StopPadsBtn_Click(object sender, RoutedEventArgs e) => _engine.Pads.StopAll();
+    private void StopPadsBtn_Click(object sender, RoutedEventArgs e)
+    {
+        _engine.Pads.StopAll();
+        SetRepeatState(false);
+    }
 
     private void ToggleEffect()
     {
@@ -718,6 +823,7 @@ public partial class MainWindow : Window
         if (e.Key == Key.Escape)
         {
             _engine.Pads.StopAll();
+            SetRepeatState(false);
             e.Handled = true;
             return;
         }
@@ -743,6 +849,7 @@ public partial class MainWindow : Window
             case Key.T: ToggleEffect(); break;
             case Key.M: ToggleMute(); break;
             case Key.L: ToggleMonitor(); break;
+            case Key.R: ToggleRepeat(); break;
         }
     }
 }

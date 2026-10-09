@@ -405,6 +405,11 @@
                                             <Path Data="{StaticResource GeoStop}" Width="9" Height="9" Style="{StaticResource WhiteIcon}"/>
                                         </MenuItem.Icon>
                                     </MenuItem>
+                                    <MenuItem x:Name="CtxRepeat" Header="Зациклить / Повтор (R)" Click="CtxRepeat_Click">
+                                        <MenuItem.Icon>
+                                            <Path Data="{StaticResource GeoRepeat}" Width="10" Height="10" Style="{StaticResource WhiteIcon}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
                                     <Separator/>
                                     <MenuItem x:Name="CtxAdd" Header="Добавить звук…" Click="AddPadBtn_Click">
                                         <MenuItem.Icon>
@@ -478,6 +483,18 @@
                                 <ProgressBar x:Name="PadOutputVu" Minimum="0" Maximum="100" Width="90" Height="10" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Border>
+
+                        <!-- Кнопка Повтор / Зацикливание выбранного звука -->
+                        <Button x:Name="RepeatPadBtn" Padding="12,7" Margin="0,0,8,0"
+                                PreviewMouseDown="RepeatPadBtn_MouseDown"
+                                PreviewMouseUp="RepeatPadBtn_MouseUp"
+                                Click="RepeatPadBtn_Click"
+                                ToolTip="Повтор выбранного звука: клик для переключения, зажатие для удержания повтора (R)">
+                            <StackPanel Orientation="Horizontal">
+                                <Path x:Name="RepeatIcon" Data="{StaticResource GeoRepeat}" Width="11" Height="11" Style="{StaticResource WhiteIcon}" Margin="0,0,6,0"/>
+                                <TextBlock x:Name="RepeatPadBtnText" Text="Повтор (R)" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
 
                         <!-- Стоп всех сэмплов -->
                         <Button x:Name="StopPadsBtn" Padding="14,7" FontWeight="SemiBold" Click="StopPadsBtn_Click">

@@ -129,15 +129,56 @@ public sealed class SoundPadBank
         }
     }
 
-    public void Trigger(int index)
+    public void Trigger(int index, bool loop = false)
     {
         lock (_sync)
         {
             if (index < 0 || index >= _pads.Count) return;
             var p = _pads[index];
             if (p.Samples == null) return;
-            if (p.Voices.Count >= 4) p.Voices.RemoveAt(0);
-            p.Voices.Add(new Voice { Pos = 0 });
+            if (loop)
+            {
+                p.Voices.Clear();
+                p.Voices.Add(new Voice { Pos = 0, IsLooping = true });
+            }
+            else
+            {
+                if (p.Voices.Count >= 4) p.Voices.RemoveAt(0);
+                p.Voices.Add(new Voice { Pos = 0, IsLooping = false });
+            }
+        }
+    }
+
+    public void StopLooping()
+    {
+        lock (_sync)
+        {
+            foreach (var p in _pads)
+            {
+                foreach (var v in p.Voices)
+                    v.IsLooping = false;
+            }
+        }
+    }
+
+    public bool IsAnyLooping()
+    {
+        lock (_sync)
+        {
+            foreach (var p in _pads)
+            {
+                if (p.Voices.Exists(v => v.IsLooping)) return true;
+            }
+            return false;
+        }
+    }
+
+    public bool IsPadLooping(int index)
+    {
+        lock (_sync)
+        {
+            if (index < 0 || index >= _pads.Count) return false;
+            return _pads[index].Voices.Exists(v => v.IsLooping);
         }
     }
 
@@ -195,7 +236,17 @@ public sealed class SoundPadBank
                     int take = Math.Min(left, n);
                     for (int i = 0; i < take; i++) buffer[i] += s[pos + i] * g;
                     voice.Pos += take;
-                    if (voice.Pos >= s.Length) p.Voices.RemoveAt(v);
+                    if (voice.Pos >= s.Length)
+                    {
+                        if (voice.IsLooping)
+                        {
+                            voice.Pos = 0;
+                        }
+                        else
+                        {
+                            p.Voices.RemoveAt(v);
+                        }
+                    }
                 }
             }
         }
@@ -238,5 +289,6 @@ public sealed class SoundPadBank
     private sealed class Voice
     {
         public int Pos;
+        public bool IsLooping;
     }
 }
