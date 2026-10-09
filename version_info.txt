@@ -14,13 +14,13 @@
       [
       StringTable(
         '040904b0',
-        [StringStruct('CompanyName', 'VoicehackTool Community'),
-        StringStruct('FileDescription', 'VoicehackTool Real-Time Voice Changer'),
+        [StringStruct('CompanyName', 'OSP OpenSoundPad Community'),
+        StringStruct('FileDescription', 'OSP OpenSoundPad Real-Time Voice Changer'),
         StringStruct('FileVersion', '1.0.0.0'),
-        StringStruct('InternalName', 'VoicehackTool'),
+        StringStruct('InternalName', 'OpenSoundPad'),
         StringStruct('LegalCopyright', 'Copyright (C) 2026 Pomidor8639'),
-        StringStruct('OriginalFilename', 'VoicehackTool.exe'),
-        StringStruct('ProductName', 'VoicehackTool'),
+        StringStruct('OriginalFilename', 'OpenSoundPad.exe'),
+        StringStruct('ProductName', 'OSP OpenSoundPad'),
         StringStruct('ProductVersion', '1.0.0.0')])
       ]), 
     VarFileInfo([VarStruct('Translation', [1033, 1200])])

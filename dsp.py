@@ -2,7 +2,7 @@
 import scipy.signal as signal
 
 
-class VoiceChangerDSP:
+class OpenSoundPadDSP:
 
     VOICES = {
         1: "Аноним",
@@ -247,4 +247,5 @@ class VoiceChangerDSP:
         return final.astype(np.float32)
 
 
-AnonymousVoiceDSP = VoiceChangerDSP
+VoiceChangerDSP = OpenSoundPadDSP
+AnonymousVoiceDSP = OpenSoundPadDSP

@@ -1,10 +1,10 @@
 ﻿<div align="center">
 
-# VoicehackTool
+# OSP — OpenSoundPad
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
-[![Release](https://img.shields.io/github/v/release/Pomidor8639/VoiceHackTool?style=for-the-badge&color=blue)](https://github.com/Pomidor8639/VoiceHackTool/releases)
+[![Release](https://img.shields.io/github/v/release/Pomidor8639/OpenSoundPad?style=for-the-badge&color=blue)](https://github.com/Pomidor8639/OpenSoundPad/releases)
 [![SoundDevice](https://img.shields.io/badge/SoundDevice-PortAudio-FF6F00?style=for-the-badge)](https://python-sounddevice.readthedocs.io/)
 [![NumPy](https://img.shields.io/badge/NumPy-Fast_DSP-013243?style=for-the-badge&logo=numpy&logoColor=white)](https://numpy.org/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
@@ -52,7 +52,7 @@
   - Функция прослушивания собственного обработанного голоса в наушниках без задержек.
 
 - Сохранение настроек в системе:
-  - Параметры автоматически сохраняются в постоянную системную папку `%APPDATA%\VoicehackTool\config.json`.
+  - Параметры автоматически сохраняются в постоянную системную папку `%APPDATA%\OpenSoundPad\config.json`.
 
 ---
 
@@ -91,16 +91,16 @@
 
 ### Способ 1. Готовый архив (Без установки Python)
 
-1. Перейдите на страницу [Релизов](https://github.com/Pomidor8639/VoiceHackTool/releases/tag/v1.0.0).
-2. Скачайте архив `VoicehackTool-v1.0.0-windows.zip`.
-3. Распакуйте в любую удобную папку и запустите `VoicehackTool.exe`.
+1. Перейдите на страницу [Релизов](https://github.com/Pomidor8639/OpenSoundPad/releases/tag/v1.0.0).
+2. Скачайте архив `OpenSoundPad-v1.0.0-windows.zip`.
+3. Распакуйте в любую удобную папку и запустите `OpenSoundPad.exe`.
 
 ### Способ 2. Запуск через Python
 
 1. Клонируйте репозиторий:
 ```bash
-git clone https://github.com/Pomidor8639/VoiceHackTool.git
-cd VoiceHackTool
+git clone https://github.com/Pomidor8639/OpenSoundPad.git
+cd OpenSoundPad
 ```
 
 2. Установите зависимости:

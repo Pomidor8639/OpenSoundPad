@@ -3,10 +3,10 @@
   <assemblyIdentity
     version="1.0.0.0"
     processorArchitecture="*"
-    name="VoicehackTool"
+    name="OpenSoundPad"
     type="win32"
   />
-  <description>VoicehackTool Real-Time Voice Changer</description>
+  <description>OSP OpenSoundPad Real-Time Voice Changer</description>
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
     <security>
       <requestedPrivileges>

@@ -7,11 +7,21 @@ import sounddevice as sd
 def get_config_path() -> str:
     appdata = os.getenv('APPDATA')
     if appdata:
-        config_dir = os.path.join(appdata, "VoicehackTool")
+        config_dir = os.path.join(appdata, "OpenSoundPad")
     else:
-        config_dir = os.path.join(os.path.expanduser("~"), ".voicehacktool")
+        config_dir = os.path.join(os.path.expanduser("~"), ".opensoundpad")
     os.makedirs(config_dir, exist_ok=True)
     return os.path.join(config_dir, "config.json")
+
+
+def get_legacy_config_paths() -> list:
+    """Старые пути конфигов VoicehackTool для автоматической миграции."""
+    paths = []
+    appdata = os.getenv('APPDATA')
+    if appdata:
+        paths.append(os.path.join(appdata, "VoicehackTool", "config.json"))
+    paths.append(os.path.join(os.path.expanduser("~"), ".voicehacktool", "config.json"))
+    return paths
 
 
 CONFIG_FILE = get_config_path()
@@ -33,6 +43,16 @@ class ConfigManager:
                     return bool(data.get("input_device_name") and data.get("output_device_name"))
             except Exception:
                 pass
+        # Миграция со старого пути VoicehackTool
+        for legacy in get_legacy_config_paths():
+            if os.path.exists(legacy):
+                try:
+                    with open(legacy, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                        if data.get("input_device_name") and data.get("output_device_name"):
+                            return True
+                except Exception:
+                    pass
         if os.path.exists(LOCAL_CONFIG_FILE):
             try:
                 with open(LOCAL_CONFIG_FILE, "r", encoding="utf-8") as f:
@@ -50,6 +70,16 @@ class ConfigManager:
                     return json.load(f)
             except Exception:
                 pass
+        # Миграция со старого пути VoicehackTool -> OpenSoundPad
+        for legacy in get_legacy_config_paths():
+            if os.path.exists(legacy):
+                try:
+                    with open(legacy, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                        cls.save_config(data)
+                        return data
+                except Exception:
+                    pass
         if os.path.exists(LOCAL_CONFIG_FILE):
             try:
                 with open(LOCAL_CONFIG_FILE, "r", encoding="utf-8") as f:

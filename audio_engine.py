@@ -7,7 +7,7 @@ import threading
 import sounddevice as sd
 import numpy as np
 
-from dsp import AnonymousVoiceDSP
+from dsp import OpenSoundPadDSP
 
 
 class AudioDeviceManager:
@@ -207,13 +207,13 @@ class AudioDeviceManager:
         return outputs[0]['index'] if outputs else None
 
 
-class VoicehackToolEngine:
+class OpenSoundPadEngine:
     
 
     def __init__(self, sample_rate: int = 44100, block_size: int = 512):
         self.sample_rate = sample_rate
         self.block_size = block_size
-        self.dsp = AnonymousVoiceDSP(sample_rate=sample_rate)
+        self.dsp = OpenSoundPadDSP(sample_rate=sample_rate)
 
         self.input_device_id = None
         self.output_device_id = None
@@ -370,7 +370,9 @@ class VoicehackToolEngine:
                 pass
             self._stream = None
 
-VoiceHackEngine = VoicehackToolEngine
+OSPEngine = OpenSoundPadEngine
+VoicehackToolEngine = OpenSoundPadEngine
+VoiceHackEngine = OpenSoundPadEngine
 
 
 class MicrophoneTester:

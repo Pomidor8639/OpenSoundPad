@@ -14,8 +14,12 @@ class TerminalUI:
 
     @staticmethod
     def get_banner():
-        figlet = pyfiglet.figlet_format("VoicehackTool", font="slant")
-        return Colorate.Horizontal(Colors.green_to_cyan, figlet) + "\n"
+        figlet = pyfiglet.figlet_format("OSP", font="slant")
+        banner = Colorate.Horizontal(Colors.green_to_cyan, figlet)
+        banner += Colorate.Horizontal(
+            Colors.green_to_cyan, "        OpenSoundPad - Real-Time Voice Changer\n"
+        )
+        return banner + "\n"
 
     @staticmethod
     def render_vu_meter(level: float, length: int = 15) -> str:
@@ -278,3 +282,4 @@ class TerminalUI:
 
 
 VoiceChangerUI = TerminalUI
+OSPUI = TerminalUI

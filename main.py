@@ -4,8 +4,8 @@ import time
 import msvcrt
 import sounddevice as sd
 
-from dsp import VoiceChangerDSP
-from audio_engine import AudioDeviceManager, VoicehackToolEngine, MicrophoneTester
+from dsp import OpenSoundPadDSP
+from audio_engine import AudioDeviceManager, OpenSoundPadEngine, MicrophoneTester
 from config_manager import ConfigManager
 from ui import TerminalUI
 
@@ -24,7 +24,7 @@ def first_time_setup():
     TerminalUI.clear_screen()
     print(TerminalUI.get_banner())
     print(" " + "=" * 65)
-    print("  \033[93mПЕРВЫЙ ЗАПУСК VOICEHACKTOOL\033[0m")
+    print("  \033[93mПЕРВЫЙ ЗАПУСК OSP OpenSoundPad\033[0m")
     print("  Сохраненные настройки устройств не найдены.")
     print("  Выполним быструю настройку микрофона и устройств вывода.")
     print(" " + "=" * 65)
@@ -125,7 +125,7 @@ def auto_detect_devices():
     return selected_in, selected_out, selected_monitor
 
 
-def handle_device_configuration(engine: VoicehackToolEngine):
+def handle_device_configuration(engine: OpenSoundPadEngine):
     engine.stop()
 
     while True:
@@ -206,7 +206,7 @@ def main():
         input("Нажмите Enter для выхода...")
         return
 
-    engine = VoicehackToolEngine(sample_rate=44100, block_size=512)
+    engine = OpenSoundPadEngine(sample_rate=44100, block_size=512)
     engine.set_devices(in_id, out_id, monitor_id)
 
     saved_cfg = ConfigManager.load_config()
@@ -224,7 +224,7 @@ def main():
     except Exception as e:
         try:
             engine.sample_rate = 48000
-            engine.dsp = VoiceChangerDSP(sample_rate=48000)
+            engine.dsp = OpenSoundPadDSP(sample_rate=48000)
             if saved_custom and isinstance(saved_custom, dict):
                 engine.dsp.set_custom_params(saved_custom)
             engine.dsp.set_voice(saved_voice)
@@ -327,7 +327,7 @@ def main():
         engine.stop()
         TerminalUI.clear_screen()
         print(TerminalUI.get_banner())
-        print("\033[93m  Программа VoicehackTool завершила работу. Звуковые потоки закрыты.\033[0m\n")
+        print("\033[93m  Программа OSP OpenSoundPad завершила работу. Звуковые потоки закрыты.\033[0m\n")
 
 
 if __name__ == "__main__":
