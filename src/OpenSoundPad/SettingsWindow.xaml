@@ -29,6 +29,12 @@
                             <StackPanel>
                                 <TextBlock x:Name="VirtLabel" Text="Микрофон в системе (выбрать в Discord/CS):" Foreground="{StaticResource TextMuted}" FontSize="11"/>
                                 <TextBlock x:Name="VirtMicText" Text="—" Foreground="{StaticResource AccentGreen}" FontWeight="SemiBold" FontSize="12" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                                <Button x:Name="InstallCableBtn" HorizontalAlignment="Left" Margin="0,8,0,2" Padding="10,5" Visibility="Collapsed" Click="InstallCableBtn_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Path Data="{StaticResource GeoUpload}" Width="11" Height="11" Style="{StaticResource WhiteIcon}" Margin="0,0,6,0"/>
+                                        <TextBlock x:Name="InstallCableBtnText" Text="Установить драйвер VB-CABLE" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
                             </StackPanel>
                         </Border>
 
@@ -66,7 +72,7 @@
                     <StackPanel>
                         <DockPanel Margin="0,2,0,6">
                             <TextBlock Text="OSP — OpenSoundPad" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource AccentGreen}"/>
-                            <TextBlock x:Name="AppVersionText" Text="v1.7.0" HorizontalAlignment="Right" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                            <TextBlock x:Name="AppVersionText" Text="v1.8.0" HorizontalAlignment="Right" Foreground="{StaticResource TextMuted}" FontSize="12"/>
                         </DockPanel>
                         <TextBlock x:Name="AppDescText" Text="Голосовой модулятор реального времени и саундпад с выводом в виртуальный микрофон Windows."
                                    Foreground="{StaticResource TextMuted}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"/>

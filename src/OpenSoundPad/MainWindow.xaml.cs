@@ -710,9 +710,19 @@ public partial class MainWindow : Window
         {
             if (_config.InputDeviceId == null || _config.OutputDeviceId == null)
             {
-                MessageBox.Show(Loc.NeedDevices, "OSP", MessageBoxButton.OK, MessageBoxImage.Warning);
-                OpenSettings();
-                if (_config.InputDeviceId == null || _config.OutputDeviceId == null) return;
+                var inList = OspEngine.GetInputMicrophones();
+                var outList = OspEngine.GetVirtualCables();
+                if (_config.InputDeviceId == null && inList.Count > 0)
+                    _config.InputDeviceId = inList[0].Id;
+                if (_config.OutputDeviceId == null && outList.Count > 0)
+                    _config.OutputDeviceId = outList[0].Id;
+
+                if (_config.InputDeviceId == null || _config.OutputDeviceId == null)
+                {
+                    MessageBox.Show(Loc.NeedDevices, "OSP", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    OpenSettings();
+                    if (_config.InputDeviceId == null || _config.OutputDeviceId == null) return;
+                }
             }
             _engine.SetDevices(_config.InputDeviceId, _config.OutputDeviceId, _config.MonitorDeviceId);
 

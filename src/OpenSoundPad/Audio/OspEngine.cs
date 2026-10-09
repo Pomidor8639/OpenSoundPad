@@ -41,9 +41,15 @@ public sealed class OspEngine : IDisposable
     private float[] _proc = Array.Empty<float>();
     private readonly object _sync = new();
 
-    public static List<OspDevice> GetInputMicrophones() => GetDevices(DataFlow.Capture, physicalOnly: true);
-    public static List<OspDevice> GetVirtualCables() => GetDevices(DataFlow.Render, virtualOnly: true);
-    public static List<OspDevice> GetOutputDevices() => GetDevices(DataFlow.Render, physicalOnly: true);
+    public static List<OspDevice> GetInputMicrophones() => GetDevices(DataFlow.Capture, physicalOnly: false);
+    public static bool HasVirtualCable() => GetDevices(DataFlow.Render, virtualOnly: true).Count > 0;
+    public static List<OspDevice> GetVirtualCables()
+    {
+        var virt = GetDevices(DataFlow.Render, virtualOnly: true);
+        if (virt.Count > 0) return virt;
+        return GetDevices(DataFlow.Render, physicalOnly: false);
+    }
+    public static List<OspDevice> GetOutputDevices() => GetDevices(DataFlow.Render, physicalOnly: false);
 
     private static List<OspDevice> GetDevices(DataFlow flow, bool physicalOnly = false, bool virtualOnly = false)
     {
@@ -75,7 +81,10 @@ public sealed class OspEngine : IDisposable
         if (l.Contains("animaze")) return "Microphone (Animaze Virtual Audio)";
         if (l.Contains("cable") || l.Contains("vb-audio")) return "CABLE Output (VB-Audio Virtual Cable)";
         if (l.Contains("voicemod")) return "Voicemod Virtual Audio Device";
-        return $"{outName} (виртуальный микрофон)";
+        bool en = Loc.Lang == "en";
+        return en
+            ? $"{outName} (Selected output • Install VB-CABLE to route directly into Discord mic)"
+            : $"{outName} (Выбранное устройство • Установите VB-CABLE для вывода в микрофон Discord)";
     }
 
     public void SetDevices(string? inputId, string? outputId, string? monitorId)

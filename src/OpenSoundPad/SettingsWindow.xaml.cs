@@ -48,9 +48,13 @@ public partial class SettingsWindow : Window
         Title = Loc.SettingsTitle;
         DevGroup.Header = Loc.SetDevices;
         MicLabel.Text = Loc.SetMic;
-        CableLabel.Text = Loc.SetCable;
+        bool hasCable = OspEngine.HasVirtualCable();
+        CableLabel.Text = hasCable ? Loc.SetCable : Loc.SetCableFallback;
         MonLabel.Text = Loc.SetMonitor;
-        VirtLabel.Text = Loc.SetVirtInSystem;
+        VirtLabel.Text = hasCable ? Loc.SetVirtInSystem : Loc.SetVirtFallback;
+        InstallCableBtnText.Text = Loc.Lang == "en"
+            ? "Install VB-CABLE driver (from vbcable folder)"
+            : "Установить драйвер VB-CABLE (из папки vbcable)";
         RefreshBtnText.Text = Loc.Refresh;
         ParGroup.Header = Loc.SetParams;
         LangGroup.Header = Loc.SetLang == "Язык:" ? "Язык / Language" : "Language / Язык";
@@ -111,14 +115,43 @@ public partial class SettingsWindow : Window
 
     private void UpdateVirtMic()
     {
+        bool hasCable = OspEngine.HasVirtualCable();
+        InstallCableBtn.Visibility = !hasCable ? Visibility.Visible : Visibility.Collapsed;
         VirtMicText.Text = CableBox.SelectedItem is OspDevice dev
             ? OspEngine.FindVirtualMicName(dev.Name)
             : Loc.NoCable;
     }
 
+    private void InstallCableBtn_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string cableDir = Path.Combine(baseDir, "vbcable");
+            string setupExe = Path.Combine(cableDir, "VBCABLE_Setup_x64.exe");
+            if (File.Exists(setupExe))
+            {
+                Process.Start(new ProcessStartInfo(setupExe) { UseShellExecute = true, Verb = "runas" });
+            }
+            else if (Directory.Exists(cableDir))
+            {
+                Process.Start(new ProcessStartInfo("explorer.exe", cableDir) { UseShellExecute = true });
+            }
+            else
+            {
+                Process.Start(new ProcessStartInfo("https://vb-audio.com/Cable/") { UseShellExecute = true });
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "OSP", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
     private void RefreshBtn_Click(object sender, RoutedEventArgs e)
     {
         RefreshLists();
+        ApplyLang();
         UpdateVirtMic();
     }
 

@@ -4,7 +4,7 @@
 
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
-[![Version](https://img.shields.io/badge/Version-v1.7.0-10B981?style=for-the-badge)](https://github.com/Pomidor8639/OpenSoundPad/releases)
+[![Version](https://img.shields.io/badge/Version-v1.8.0-10B981?style=for-the-badge)](https://github.com/Pomidor8639/OpenSoundPad/releases)
 [![NAudio](https://img.shields.io/badge/NAudio-WASAPI-FF6F00?style=for-the-badge)](https://github.com/naudio/NAudio)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
@@ -13,6 +13,18 @@
 [Скачать релиз](https://github.com/Pomidor8639/OpenSoundPad/releases) • [Возможности](#возможности) • [Управление](#управление-и-горячие-клавиши) • [Сборка](#сборка-из-исходников)
 
 </div>
+
+---
+
+## Что нового в версии 1.8.0
+
+- **Умный выбор устройств при отсутствии VB-CABLE (как в оригинальном Soundpad)**:
+  - Если в системе не обнаружен виртуальный кабель VB-CABLE, приложение больше не блокируется.
+  - Автоматический выбор любого доступного микрофона и устройства воспроизведения (динамики, наушники, вторичная аудиокарта).
+  - В окне настроек добавлена кнопка быстрой установки драйвера VB-CABLE прямо из папки `vbcable` в один клик.
+- **Единый ZIP-релиз со всеми компонентами (All-in-One)**:
+  - Дистрибутив поставляется в архиве `OpenSoundPad-v1.8.0-win-x64.zip`.
+  - В архив включены: исполняемый файл `OpenSoundPad.exe`, иконка `app_icon.ico`, краткая инструкция `README.txt` и полный пакет драйверов `vbcable/`.
 
 ---
 
@@ -146,29 +158,22 @@
 
 ## Быстрый старт
 
-### Вариант 1. Установка через инсталлятор (рекомендуется)
-1. Скачайте `OpenSoundPad-Setup-v1.7.0.exe` из раздела [Релизы](https://github.com/Pomidor8639/OpenSoundPad/releases).
-2. Запустите установку: мастер сам распакует файлы, создаст ярлык с иконкой на Рабочем столе и предложит установить виртуальный аудиокабель VB-CABLE.
-3. Запустите приложение с Рабочего стола или меню «Пуск».
-
-### Вариант 2. Портативная версия (без установки)
-1. Скачайте автономный файл `OpenSoundPad.exe`.
-2. Запустите приложение (не требует установки).
-
-### Настройка звука:
-1. В верхнем меню откройте **«Настройки»** (или меню *Настройки* → *Настройки…*).
-2. Выберите:
-   - **Микрофон:** ваше реальное устройство ввода (физический микрофон или гарнитура).
-   - **Виртуальный кабель:** выход в систему (`CABLE Input (VB-Audio Virtual Cable)`).
-   - **Наушники (монитор):** ваши реальные наушники или колонки.
-3. Нажмите кнопку **«▶ Старт»** в верхней панели.
-4. В Discord / Telegram / игре в настройках звука выберите микрофон: `CABLE Output (VB-Audio Virtual Cable)`.
+1. Скачайте готовый архив `OpenSoundPad-v1.8.0-win-x64.zip` (или автономный `OpenSoundPad.exe`) со страницы [Релизы](https://github.com/Pomidor8639/OpenSoundPad/releases).
+2. Распакуйте архив в любую удобную папку.
+3. Запустите `OpenSoundPad.exe`.
+4. В верхнем меню откройте **«Настройки»** (или меню *Настройки* → *Настройки…*).
+5. Выберите:
+   - **Микрофон:** ваше физическое устройство ввода (микрофон или гарнитура).
+   - **Устройство вывода:** `CABLE Input (VB-Audio Virtual Cable)` для трансляции в микрофон Discord/игр, либо любое другое устройство вывода (наушники/динамики), если кабель не установлен (как в оригинальном Soundpad).
+   - **Наушники (монитор):** устройство для контроля своего голоса и звуков.
+6. Нажмите кнопку **«▶ Старт»** в верхней панели.
+7. Если требуется вывод звука в Discord / Telegram / игры: откройте вложенную папку `vbcable/` и установите драйвер (или нажмите кнопку прямо в окне Настроек), затем в Discord выберите микрофон `CABLE Output (VB-Audio Virtual Cable)`.
 
 ---
 
 ## Сборка из исходников
 
-Требуется установленный [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) и Inno Setup 6 (для сборки инсталлятора).
+Требуется установленный [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0).
 
 ```bash
 git clone https://github.com/Pomidor8639/OpenSoundPad.git
@@ -177,8 +182,6 @@ cd OpenSoundPad
 dotnet run --project src/OpenSoundPad/OpenSoundPad.csproj
 
 dotnet publish src/OpenSoundPad/OpenSoundPad.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -o publish
-
-iscc installer/OpenSoundPad.iss
 ```
 
 ---

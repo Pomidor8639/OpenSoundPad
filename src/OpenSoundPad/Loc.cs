@@ -141,8 +141,12 @@ public static class Loc
     public static string SetDevices => En ? "Devices" : "Устройства";
     public static string SetMic => En ? "Microphone:" : "Микрофон:";
     public static string SetCable => En ? "Virtual cable (OSP output):" : "Виртуальный кабель (выход OSP):";
+    public static string SetCableFallback => En
+        ? "Output device (VB-CABLE not detected, pick any output):"
+        : "Устройство вывода (VB-CABLE не обнаружен, выберите другой выход):";
     public static string SetMonitor => En ? "Headphones (monitor):" : "Наушники (монитор):";
     public static string SetVirtInSystem => En ? "System mic (pick in Discord):" : "Микрофон в системе (выбрать в Discord):";
+    public static string SetVirtFallback => En ? "Output routing:" : "Маршрутизация звука:";
     public static string Refresh => En ? "Refresh" : "Обновить";
     public static string SetParams => En ? "Parameters" : "Параметры";
     public static string Pregain(double v) => En ? $"Input pregain: x{v:0.0}" : $"Предусиление входа: x{v:0.0}";
