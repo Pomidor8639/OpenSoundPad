@@ -19,7 +19,12 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
-    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
+    <Copyright>Copyright (c) 2026 OpenSoundPad Community</Copyright>
+    <Authors>Pomidor8639</Authors>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <FileVersion>1.11.0.0</FileVersion>
+    <AssemblyVersion>1.11.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
