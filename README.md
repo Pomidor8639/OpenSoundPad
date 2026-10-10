@@ -7,6 +7,7 @@
 [![Version](https://img.shields.io/badge/Version-v1.11.0-10B981?style=for-the-badge)](https://github.com/Pomidor8639/OpenSoundPad/releases)
 [![NAudio](https://img.shields.io/badge/NAudio-WASAPI-FF6F00?style=for-the-badge)](https://github.com/naudio/NAudio)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge)](LICENSE)
+[![AlternativeTo](https://img.shields.io/badge/AlternativeTo-OpenSoundPad-0078D4?style=for-the-badge&logo=alternativeto&logoColor=white)](https://alternativeto.net/software/opensoundpad/)
 
 **OSP (OpenSoundPad) is a lightweight, low-latency, real-time voice changer and full-featured soundpad for Windows with direct output to virtual microphones.**
 
