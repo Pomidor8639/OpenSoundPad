@@ -4,242 +4,165 @@
 
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
-[![Version](https://img.shields.io/badge/Version-v1.10.0-10B981?style=for-the-badge)](https://github.com/Pomidor8639/OpenSoundPad/releases)
+[![Version](https://img.shields.io/badge/Version-v1.11.0-10B981?style=for-the-badge)](https://github.com/Pomidor8639/OpenSoundPad/releases)
 [![NAudio](https://img.shields.io/badge/NAudio-WASAPI-FF6F00?style=for-the-badge)](https://github.com/naudio/NAudio)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-**OSP (OpenSoundPad) — легковесное высокопроизводительное приложение для изменения голоса в реальном времени и полнофункциональный саундпад с выводом в виртуальный микрофон Windows.**
+**OSP (OpenSoundPad) is a lightweight, low-latency, real-time voice changer and full-featured soundpad for Windows with direct output to virtual microphones.**
 
-[Скачать релиз](https://github.com/Pomidor8639/OpenSoundPad/releases) • [Возможности](#возможности) • [Управление](#управление-и-горячие-клавиши) • [Сборка](#сборка-из-исходников)
+[Download Release](https://github.com/Pomidor8639/OpenSoundPad/releases) • [Features](#features) • [Hotkeys & Controls](#hotkeys--controls) • [Quick Start](#quick-start) • [Build from Source](#building-from-source) • [🇷🇺 Русский язык](#-документация-на-русском-языке-russian-documentation)
 
 </div>
 
 ---
 
-## Что нового в версии 1.10.0
+## What's New in v1.11.0
 
-- **Постоянное хранилище сэмплов (Persistent Storage)**:
-  - Все добавленные аудиофайлы (через проводник или drag-and-drop) автоматически копируются во внутреннее хранилище приложения (`%APPDATA%\OpenSoundPad\sounds\`).
-  - Звуки гарантированно не пропадут, даже если пользователь удалил или переместил исходные файлы из «Загрузок» или с Рабочего стола.
-- **Переименование звуков**:
-  - Добавлена возможность переименования треков через контекстное меню (ПКМ по треку -> «Переименовать…»).
-  - Новые названия отображаются в списке и сохраняются в конфигурации приложения.
-- **Крутилка громкости в саундпаде**:
-  - Ползунок громкости заменен на плавный круговой регулятор (0–200%), выполненный в едином дизайн-коде со Студией голоса.
-- **Исправление верстки крутилок**:
-  - Устранено обрезание цифровых бейджей со значениями при различных масштабах экрана Windows (DPI).
-- **Минималистичный заголовок и быстрое меню**:
-  - В заголовке оставлен только фирменный зеленый логотип OSP без лишних подписей.
-  - Пункт меню «Настройки» теперь мгновенно открывает окно настроек в один клик.
-  - Удалена неиспользуемая кнопка «Справка», а из контекстного меню саундпада убраны лишние разделители.
-
----
-
-## Что нового в версии 1.9.0
-
-- **Фирменный темный заголовок окна (Custom Dark TitleBar)**:
-  - Стандартная светлая полоса Windows с системными кнопками заменена на аккуратный темный заголовок в общем стиле приложения.
-  - Кастомные векторные кнопки управления окном (Свернуть, Развернуть/Восстановить, Закрыть с фирменными эффектами наведения).
-  - В заголовок интегрированы иконка приложения, название OSP и главное меню («Файл», «Настройки», «Справка»).
-  - Полная поддержка системного перетаскивания, двойного клика для максимизации и Windows Aero Snap.
-  - Кастомный заголовок также применен к диалоговому окну «Настройки».
+- **First-Run Language Setup Screen**:
+  - On the very first launch, users are greeted with a clean, focused language selection screen.
+  - Nothing else is shown until a language is chosen.
+  - Your selection is remembered, and OpenSoundPad opens immediately in your chosen language on every subsequent launch.
+- **Support for 5 Languages**:
+  - Full native translations for: 🇬🇧 **English**, 🇷🇺 **Русский**, 🇩🇪 **Deutsch**, 🇪🇸 **Español**, and 🇫🇷 **Français**.
+  - All UI elements, dials, dialogs, presets, and tooltips are localized.
+  - Language can be switched anytime in Settings.
+- **Persistent Sound Storage**:
+  - Sounds added via button or drag-and-drop are automatically copied to internal storage (`%APPDATA%\OpenSoundPad\sounds\`).
+  - Audio files never disappear even if moved or deleted from Downloads or Desktop.
+- **Sample Renaming**:
+  - Right-click any track in the Soundpad and select "Rename…" to customize track titles.
+- **Soundpad Rotary Volume Knob**:
+  - Sleek rotary knob (0–200%) in the soundpad toolbar matching the Voice Studio styling.
 
 ---
 
-## Что нового в версии 1.8.1
+## Features
 
-- **Исправление автономного запуска (Self-Contained Standalone Fix)**:
-  - Устранена ошибка `DllNotFoundException` (связанная с `wpfgfx_cor3.dll`, `PresentationNative_cor3.dll`, `D3DCompiler_47_cor3.dll`), из-за которой `OpenSoundPad.exe` не запускался вне каталога компиляции.
-  - Нативные библиотеки WPF и среда выполнения теперь полностью упакованы в самораспаковывающийся бандл (`IncludeNativeLibrariesForSelfExtract` + сжатие).
-  - Приложение гарантированно запускается в любой папке, на Рабочем столе, из папки загрузок или с внешнего накопителя без установки дополнительных библиотек.
-  - Добавлена глобальная обработка непредвиденных исключений с информативными сообщениями.
+### 1. Voice Changer Studio (Real-Time DSP)
+- **5 Built-In Voice Presets:**
+  - **1. Anonymous:** Multi-layer pitch shift (-7.0 & -13.5 st), resonance filter, and soft overdrive for complete vocal anonymity.
+  - **2. Female:** Natural formant shift (+3.8 st), high-pass sub-bass cut, harmonic enhancement.
+  - **3. Kid:** High pitch (+6.0 st), bright tone.
+  - **4. Demon:** Deep guttural growl (-9.0 & -15.5 st) with aggressive analog distortion.
+  - **5. Custom:** Free manual tuning using 4 rotary knobs.
+- **Analog Rotary Knobs (True Angular + Linear Drag):**
+  - **Pitch:** -18 to +18 semitones (bipolar scale).
+  - **Distortion:** 0 to 100% overdrive.
+  - **Bass Boost:** 0 to +15 dB low-end boost.
+  - **Robotizer:** 0 to 100% ring modulation.
+  - **Mic Volume:** 50% to 400% preamplification.
+- **Knob Physics:** Circular radial drag, vertical DAW-style drag, direct click on scale, mouse wheel adjustment, Shift for micro-precision, double-click to reset.
 
----
+### 2. Soundpad Bank
+- **Dynamic Unlimited Track List:** Add as many audio files as you want without hard caps.
+- **Fast Importing:** Click «+ Add sound…» or simply Drag & Drop audio files from Windows Explorer.
+- **Supported Formats:** `.mp3`, `.wav`, `.ogg`, `.flac`, `.aiff`, `.m4a`, `.wma`.
+- **Right-Click Context Menu:** Play, Stop, Loop/Repeat (R), Rename, Remove from list (Del), Clear all.
+- **Polyphonic Engine:** Play multiple sounds simultaneously with zero stutter or buffer clipping.
+- **Loop / Repeat Mode:** Single click or press `R` to toggle loop, or hold the button for continuous repeat while pressed.
 
-## Что нового в версии 1.8.0
+### 3. Audio Pipeline & Routing
+- **Universal Virtual Audio Cable Support:** Works with VB-Audio Virtual Cable, Voicemod Virtual Audio, Animaze, etc.
+- **Zero-Latency WASAPI Streaming:** Stream processed voice and soundpad effects directly to Discord, Steam, CS2, Dota 2, Telegram, and OBS.
+- **Smart Fallback:** If VB-CABLE is not installed, the app allows selecting any standard microphone or output device (like original Soundpad).
+- **Monitoring:** Listen to your own processed voice and sound effects in your headphones simultaneously.
+- **Built-in Noise Gate:** Adaptive threshold gate to eliminate background hiss and keyboard noise.
 
-- **Умный выбор устройств при отсутствии VB-CABLE (как в оригинальном Soundpad)**:
-  - Если в системе не обнаружен виртуальный кабель VB-CABLE, приложение больше не блокируется.
-  - Автоматический выбор любого доступного микрофона и устройства воспроизведения (динамики, наушники, вторичная аудиокарта).
-  - В окне настроек добавлена кнопка быстрой установки драйвера VB-CABLE прямо из папки `vbcable` в один клик.
-- **Единый ZIP-релиз со всеми компонентами (All-in-One)**:
-  - Дистрибутив поставляется в архиве `OpenSoundPad-v1.8.0-win-x64.zip`.
-  - В архив включены: исполняемый файл `OpenSoundPad.exe`, иконка `app_icon.ico`, краткая инструкция `README.txt` и полный пакет драйверов `vbcable/`.
-
----
-
-## Что нового в версии 1.7.0
-
-- **Полноценный инсталлятор (OpenSoundPad-Setup-v1.7.0.exe)**:
-  - Единый мастер установки приложения со всеми зависимостями в один клик.
-  - Автоматическое создание ярлыка на Рабочем столе с официальной иконкой приложения.
-  - Создание ярлыков в меню «Пуск» (приложение, панель управления и деинсталлятор).
-  - Встроенный пакет драйверов **VB-Audio Virtual Cable**: мастер предлагает установить и зарегистрировать виртуальный аудиокабель прямо во время установки для Discord, CS2, Telegram и других программ.
-- **Раздел «О приложении» в окне настроек**:
-  - В окно «Настройки» добавлен блок «О приложении» с версией программы и описанием.
-  - Добавлена кликабельная ссылка на GitHub-репозиторий проекта (`https://github.com/Pomidor8639/OpenSoundPad`) с открытием в браузере в один клик.
-  - Полная поддержка двуязычной локализации (Русский / English).
-
----
-
-## Что нового в версии 1.6.0
-
-- **Кнопка повтора и зацикливания (Repeat / Loop)**: новая кнопка на панели саундпада и пункт в контекстном меню (ПКМ) для непрерывного воспроизведения выбранного звука.
-- **Гибридный режим удержания и переключения**:
-  - *Зажатие кнопки мыши*: если зажать кнопку «Повтор» (удержание более 350 мс), звук непрерывно повторяется всё время, пока кнопка зажата, и сразу выключается при отпускании.
-  - *Одиночный клик или горячая клавиша `R`*: быстрое включение/выключение постоянного цикличного повтора с ярким изумрудным статусом кнопки (`Повтор: ВКЛ (R)`).
-- **Бесшовный аудиодвижок (Zero-Gap Looping)**: мгновенный возврат сэмпла в начальную позицию прямо в WASAPI-аудиопотоке без задержек и щелчков.
-- **Интеграция с управлением**:
-  - Мгновенная остановка повтора по клавише `Esc`, кнопке «Стоп всех», повторному нажатию `R` или клику по кнопке повтора.
-  - Поддержка зацикливания через контекстное меню ПКМ («Зациклить / Повтор (R)»).
+### 4. True Black OLED Design
+- Pitch-black background with emerald green accents.
+- Custom dark title bar with window snapping and caption controls.
+- Fast, standalone single-file binary with zero external dependencies.
 
 ---
 
-## Что нового в версии 1.5.0
+## Hotkeys & Controls
 
-- **Управление через контекстное меню (ПКМ)**: удаление треков и очистка списка перенесены в удобное контекстное меню по правой кнопке мыши на музыке.
-- **Очищенный интерфейс пульта**: с нижней панели саундпада убраны лишние кнопки, осталась крупная кнопка «+ Добавить звук…» и единая консоль воспроизведения.
-- **Единый пульт мониторинга и остановки**:
-  - Единая кнопка **«Монитор (L)»** в верхней панели инструментов для контроля микрофона и звуков в наушниках.
-  - Единая кнопка **«Стоп всех (Esc)»** в пульте саундпада.
-- **Аналоговые крутилки Rotary Knobs**: субпиксельное аналоговое вращение (True Angular Tracking) и линейное перетаскивание (DAW-style) для точной подстройки тембра.
-- **Переключатель режимов в 1 клик**: мгновенный переход между режимом голосовых эффектов («Войсмод») и полноэкранной таблицей треков («Саундпад»).
-
----
-
-## Возможности
-
-### 1. Режим «Войсмод» (Voice Studio)
-- **5 DSP-пресетов голоса:**
-  - **1. Аноним:** многослойный сдвиг высоты тона (-7.0 и -13.5 полутонов), фильтрация резонанса (135 Гц), срез высоких частот (3900 Гц) и мягкий сатуратор для полной маскировки личности.
-  - **2. Женский:** естественный формантный сдвиг (+3.8 полутона), срез суб-баса (170 Гц), подъем гармоник разборчивости речи (2800 Гц).
-  - **3. Ребенок:** звонкий юный голос (+6.0 полутонов), фильтр высоких частот (230 Гц) и акцент на частоте 3600 Гц.
-  - **4. Демон:** массивный низкий гроул (-9.0 и -15.5 полутонов) с агрессивным аналоговым дисторшном.
-  - **5. Пользовательский (Кастом):** свободная ручная настройка 4 крутилками.
-- **Аналоговые крутилки точной подстройки (Rotary Knobs):**
-  - **Питч:** от -18 до +18 полутонов (биполярная шкала с центром на 0).
-  - **Дисторшн:** от 0 до 100% перегруза.
-  - **Бас:** подъем низких частот от 0 до +15 дБ.
-  - **Роботизация:** кольцевая модуляция от 0 до 100%.
-  - **Громкость микрофона:** предусиление от 50% до 400%.
-- **Физика крутилок:**
-  - Вращение курсором по кругу циферблата (по часовой — увеличение, против часовой — уменьшение).
-  - Вертикальное перетаскивание вверх/вниз в стиле профессиональных плагинов (FL Studio, FabFilter, Ableton).
-  - Мгновенный клик в любую точку круговой шкалы для перехода к значению.
-  - Колесико мыши для шаговой регулировки и зажатый Shift для микро-подстройки.
-  - Двойной клик для сброса в исходное положение.
-
-### 2. Режим «Саундпад» (Soundpad)
-- **Динамический список треков без ограничений:** последовательное добавление сэмплов один за другим (без фиксированного лимита).
-- **Быстрое добавление:** кнопка «+ Добавить звук…» с множественным выбором аудиофайлов или прямое перетаскивание (Drag & Drop) пачки файлов из Проводника Windows.
-- **Поддерживаемые форматы:** `.mp3`, `.wav`, `.ogg`, `.flac`, `.aiff`, `.m4a`, `.wma`.
-- **Контекстное меню по правой кнопке мыши:**
-  - Воспроизвести сэмпл
-  - Остановить
-  - Добавить звук…
-  - Удалить из списка (Del)
-  - Очистить весь список (с подтверждением)
-- **Полифонический движок:** одновременное воспроизведение любого количества сэмплов без захлебываний.
-- **Плавная регулировка общей громкости сэмплов (0–200%) и счетчик активных дорожек в эфире.**
-
-### 3. Звуковой тракт и маршрутизация
-- **Поддержка любых виртуальных аудиокабелей:** VB-Audio Virtual Cable, Animaze Virtual Audio, Voicemod Virtual Audio и другие.
-- **Трансляция в реальном времени:** чистый звук без задержек транслируется в виртуальный микрофон для Discord, Telegram, OBS, Steam, CS2, Dota 2.
-- **Мониторинг:** возможность слушать свой обработанный голос и сэмплы в наушниках параллельно с вещанием в кабель.
-- **Микшер и индикаторы VU:** визуальные индикаторы уровня входного сигнала с микрофона и результирующего выхода в эфир.
-- **Встроенный адаптивный Noise Gate (шумоподавитель)** и мягкий кроссфейд при смене пресетов без щелчков.
-
-### 4. Дизайн True Black (OLED)
-- Полностью черный интерфейс (`#000000`) с изумрудными акцентами (`#10B981`).
-- Минималистичные векторные монохромные пиктограммы (0 сторонних шрифтов и 0 эмодзи).
-- Двуязычный интерфейс (полная локализация на Русский и English с автосохранением выбора).
-
----
-
-## Управление и горячие клавиши
-
-### Клавиатура:
-| Клавиша | Назначение |
+### Keyboard:
+| Key | Action |
 |---|---|
-| `1` – `5` | Переключение голосовых пресетов (1–5) |
-| `F1` – `F12` | Запуск первых 12 сэмплов саундпада |
-| `Space` / `Enter` | Воспроизведение выбранного сэмпла в таблице |
-| `R` | Включение / выключение зацикливания выбранного звука (Loop) |
-| `Delete` | Удаление выбранного сэмпла из саундпада |
-| `Esc` | Остановка всех играющих сэмплов и сброс зацикливания |
-| `T` | Включение / выключение эффекта голоса (Bypass) |
-| `M` | Заглушить / включить микрофон (Mute) |
-| `L` | Включение / выключение мониторинга в наушниках (Listen) |
+| `1` – `5` | Switch voice preset (1–5) |
+| `F1` – `F12` | Trigger soundpad pads 1–12 |
+| `Space` / `Enter` | Play selected track |
+| `R` | Toggle loop / repeat for selected track |
+| `Delete` | Remove selected track from soundpad |
+| `Esc` | Stop all playing sounds and reset loop |
+| `T` | Toggle voice effect bypass |
+| `M` | Mute / unmute microphone |
+| `L` | Toggle headphones monitoring (Listen) |
 
-### Мышь:
-| Действие | Назначение |
+### Mouse:
+| Action | Description |
 |---|---|
-| **Зажатие кнопки «Повтор»** | Непрерывный повтор звука на время удержания кнопки мыши (>350 мс) |
-| **Клик по кнопке «Повтор»** | Включение / выключение постоянного цикличного повтора (ON/OFF) |
-| **ПКМ по сэмплу** | Открыть контекстное меню (Играть, Зациклить, Удалить, Очистить, Добавить) |
-| **Двойной клик по сэмплу** | Запуск воспроизведения |
-| **Drag & Drop в окно** | Быстрое добавление аудиофайлов из Проводника |
-| **Тянуть крутилку вверх/вниз** | Линейное изменение параметра |
-| **Вращать крутилку по кругу** | Круговое вращение циферблата |
-| **Клик по шкале крутилки** | Мгновенный переход к выбранному значению |
-| **Колесико мыши над крутилкой** | Шаговая подстройка значения |
-| **Shift + перетаскивание** | Режим высокой точности (микро-подстройка) |
-| **Двойной клик по крутилке** | Сброс в значение по умолчанию |
+| **Hold Repeat Button** | Continuous loop while mouse button is held (>350ms) |
+| **Click Repeat Button** | Toggle persistent loop ON / OFF |
+| **Right-Click Track** | Context menu (Play, Loop, Rename, Delete, Clear) |
+| **Double-Click Track** | Play track |
+| **Drag & Drop** | Add files from Windows Explorer |
+| **Drag Knob Up/Down** | Linear parameter change |
+| **Drag Knob in Circle** | Radial dial rotation |
+| **Shift + Drag Knob** | Fine-grained precision adjustment |
+| **Double-Click Knob** | Reset to default value |
 
 ---
 
-## Системные требования
+## Quick Start
 
-- **ОС:** Windows 10 / 11 (64-bit)
-- **Среда:** .NET 9 Runtime (не требуется при использовании готовой сборки в папке `publish`)
-- **Виртуальный аудиокабель:** [VB-Audio Virtual Cable](https://vb-audio.com/Cable/) (бесплатный) или аналогичный
-
----
-
-## Быстрый старт
-
-1. Скачайте готовый архив `OpenSoundPad-v1.8.0-win-x64.zip` (или автономный `OpenSoundPad.exe`) со страницы [Релизы](https://github.com/Pomidor8639/OpenSoundPad/releases).
-2. Распакуйте архив в любую удобную папку.
-3. Запустите `OpenSoundPad.exe`.
-4. В верхнем меню откройте **«Настройки»** (или меню *Настройки* → *Настройки…*).
-5. Выберите:
-   - **Микрофон:** ваше физическое устройство ввода (микрофон или гарнитура).
-   - **Устройство вывода:** `CABLE Input (VB-Audio Virtual Cable)` для трансляции в микрофон Discord/игр, либо любое другое устройство вывода (наушники/динамики), если кабель не установлен (как в оригинальном Soundpad).
-   - **Наушники (монитор):** устройство для контроля своего голоса и звуков.
-6. Нажмите кнопку **«▶ Старт»** в верхней панели.
-7. Если требуется вывод звука в Discord / Telegram / игры: откройте вложенную папку `vbcable/` и установите драйвер (или нажмите кнопку прямо в окне Настроек), затем в Discord выберите микрофон `CABLE Output (VB-Audio Virtual Cable)`.
+1. Download the release package `OpenSoundPad-v1.11.0-win-x64.zip` (or standalone `OpenSoundPad.exe`) from [Releases](https://github.com/Pomidor8639/OpenSoundPad/releases).
+2. Extract the archive to any folder.
+3. Run `OpenSoundPad.exe`.
+4. On first launch, pick your preferred language (English, Russian, German, Spanish, French).
+5. Open **Settings** in the top bar to select your microphone and output device:
+   - **Microphone:** your physical mic.
+   - **Output:** `CABLE Input (VB-Audio Virtual Cable)` to route into Discord/games, or any audio output if VB-CABLE is absent.
+   - **Headphones:** your listening device for monitoring.
+6. Click **«▶ Start»** to activate the audio engine.
+7. In Discord / game settings, select the input device: `CABLE Output (VB-Audio Virtual Cable)`.
 
 ---
 
-## Сборка из исходников
+## Building from Source
 
-Требуется установленный [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0).
+Requires [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) on Windows.
 
 ```bash
 git clone https://github.com/Pomidor8639/OpenSoundPad.git
 cd OpenSoundPad
 
+# Run development build
 dotnet run --project src/OpenSoundPad/OpenSoundPad.csproj
 
-dotnet publish src/OpenSoundPad/OpenSoundPad.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -o publish
+# Publish standalone single-file executable
+dotnet publish src/OpenSoundPad/OpenSoundPad.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:IncludeAllContentForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish
 ```
 
 ---
 
-## Структура проекта
+## 🇷🇺 Документация на русском языке (Russian Documentation)
 
-- `src/OpenSoundPad/` — исходный код WPF-приложения (.NET 9).
-  - `Controls/KnobControl.xaml(.cs)` — аналоговые субпиксельные крутилки с гибридной физикой вращения.
-  - `Audio/OspEngine.cs` — WASAPI-движок маршрутизации звука на базе NAudio.
-  - `Audio/OspDsp.cs` — ядро цифровой обработки сигналов (питч-шифтер, биквадратные эквалайзеры, овердрайв, гейт).
-  - `Audio/SoundPadBank.cs` — полифонический динамический банк сэмплов.
-  - `Audio/OspConfig.cs` — сохранение настроек и списка треков в `%APPDATA%\OpenSoundPad\config.json`.
-  - `MainWindow.xaml(.cs)` — главное окно: переключатель режимов, Войс-мод, Саундпад, микшер, контекстное меню.
-  - `SettingsWindow.xaml(.cs)` — модальное окно выбора звуковых устройств и переключения языка.
-  - `Loc.cs` — система мультиязычной локализации (Русский / English).
+### Описание
+**OSP (OpenSoundPad)** — бесплатный, легковесный и производительный войсчейнджер реального времени и полнофункциональный саундпад на C# (.NET 9) для Windows с прямым выводом в виртуальный микрофон.
+
+### Что нового в версии 1.11.0:
+- **Экран выбора языка при первом запуске**: при самом первом запуске открывается чистое окно выбора языка, без лишних элементов. Выбор сохраняется, и программа сразу работает на выбранном языке.
+- **Поддержка 5 языков**: английский (English), русский (Русский), немецкий (Deutsch), испанский (Español) и французский (Français). Язык можно сменить в любой момент в «Настройках».
+- **Постоянное хранилище звуков**: все добавленные треки копируются в `%APPDATA%\OpenSoundPad\sounds\`. Музыка не пропадает, даже если удалить файлы из Загрузок.
+- **Переименование треков**: правый клик по треку -> «Переименовать…» для задания любого пользовательского названия.
+- **Крутилка громкости в саундпаде**: горизонтальный ползунок заменен на стильную крутилку громкости (0–200%).
+- **Автономный запуск**: полностью независимый exe-файл, не требующий установки сторонних библиотек .NET.
+
+### Горячие клавиши:
+- `1` – `5`: переключение пресетов голоса (Аноним, Женский, Ребенок, Демон, Свой).
+- `F1` – `F12`: запуск треков саундпада.
+- `Space` / `Enter`: играть выбранный трек.
+- `R`: зацикливание / повтор выбранного звука (Loop).
+- `Del`: удалить трек из списка.
+- `Esc`: стоп всех звуков и сброс зацикливания.
+- `T`: байпас эффекта голоса.
+- `M`: заглушить микрофон (Мут).
+- `L`: мониторинг в наушниках.
 
 ---
 
-## Лицензия
+## License
 
-Проект распространяется под открытой лицензией [MIT](LICENSE).
+This project is licensed under the [MIT License](LICENSE).

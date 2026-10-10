@@ -12,6 +12,23 @@ public partial class App : Application
 
         DispatcherUnhandledException += OnDispatcherUnhandledException;
         AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+
+        var config = Audio.OspConfig.Load();
+        if (!config.LanguageChosen)
+        {
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            var welcome = new WelcomeLanguageWindow();
+            welcome.ShowDialog();
+            config.Language = welcome.SelectedLanguage;
+            config.LanguageChosen = true;
+            config.Save();
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
+        }
+
+        Loc.Lang = config.Language;
+        var main = new MainWindow(config);
+        MainWindow = main;
+        main.Show();
     }
 
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
@@ -28,4 +45,3 @@ public partial class App : Application
         }
     }
 }
-

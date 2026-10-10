@@ -25,12 +25,16 @@ public partial class MainWindow : Window
     private bool _updatingUi = true;
     private bool _initialized;
 
-    public MainWindow()
+    public MainWindow() : this(OspConfig.Load())
+    {
+    }
+
+    public MainWindow(OspConfig config)
     {
         InitializeComponent();
         StateChanged += MainWindow_StateChanged;
-        _config = OspConfig.Load();
-        Loc.Lang = _config.Language == "en" ? "en" : "ru";
+        _config = config;
+        Loc.Lang = _config.Language;
 
         ApplyLanguage();
         RefreshVoicesList();
@@ -122,11 +126,11 @@ public partial class MainWindow : Window
         CustomHintText.Text = Loc.CustomVoiceHint;
         VoiceHotkeyHint.Text = Loc.VoiceHotkeysHint;
         ResetVoiceText.Text = Loc.ResetVoiceParams;
-        PitchKnob.Title = Loc.Lang == "en" ? "PITCH" : "ПИТЧ";
-        DriveKnob.Title = Loc.Lang == "en" ? "DISTORTION" : "ДИСТОРШН";
-        BassKnob.Title = Loc.Lang == "en" ? "BASS" : "БАС";
-        RobotKnob.Title = Loc.Lang == "en" ? "ROBOT" : "РОБОТИЗАЦИЯ";
-        VolumeKnob.Title = Loc.Lang == "en" ? "MIC VOLUME" : "ГРОМКОСТЬ";
+        PitchKnob.Title = Loc.PitchTitle;
+        DriveKnob.Title = Loc.DriveTitle;
+        BassKnob.Title = Loc.BassTitle;
+        RobotKnob.Title = Loc.RobotTitle;
+        VolumeKnob.Title = Loc.VolumeTitle;
 
         // Саундпад панель
         PadsGroup.Header = $"{Loc.GrPads} ({_padRows.Count})";
@@ -143,7 +147,7 @@ public partial class MainWindow : Window
         ColKey.Header = Loc.ColKey;
         CtxPlay.Header = Loc.PlayPad;
         CtxStop.Header = Loc.StopPad;
-        CtxRepeat.Header = Loc.Lang == "en" ? "Loop / Repeat (R)" : "Зациклить / Повтор (R)";
+        CtxRepeat.Header = Loc.T("Зациклить / Повтор (R)", "Loop / Repeat (R)", "Wiederholen (R)", "Bucle / Repetir (R)", "Boucle / Répéter (R)");
         CtxRename.Header = Loc.RenameSound;
         CtxDelete.Header = Loc.RemoveSound + " (Del)";
         CtxClearAll.Header = Loc.ClearAllPads;

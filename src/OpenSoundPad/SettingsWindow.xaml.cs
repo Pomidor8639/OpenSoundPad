@@ -35,9 +35,19 @@ public partial class SettingsWindow : Window
         PregainSlider.ValueChanged += (_, _) => UpdateParamLabels();
         GateSlider.ValueChanged += (_, _) => UpdateParamLabels();
 
-        LangBox.Items.Add("Русский");
         LangBox.Items.Add("English");
-        LangBox.SelectedIndex = config.Language == "en" ? 1 : 0;
+        LangBox.Items.Add("Русский");
+        LangBox.Items.Add("Deutsch");
+        LangBox.Items.Add("Español");
+        LangBox.Items.Add("Français");
+        LangBox.SelectedIndex = config.Language switch
+        {
+            "ru" => 1,
+            "de" => 2,
+            "es" => 3,
+            "fr" => 4,
+            _ => 0
+        };
 
         ConfigPathText.Text = OspConfig.GetFilePath();
         _ready = true;
@@ -52,12 +62,15 @@ public partial class SettingsWindow : Window
         CableLabel.Text = hasCable ? Loc.SetCable : Loc.SetCableFallback;
         MonLabel.Text = Loc.SetMonitor;
         VirtLabel.Text = hasCable ? Loc.SetVirtInSystem : Loc.SetVirtFallback;
-        InstallCableBtnText.Text = Loc.Lang == "en"
-            ? "Install VB-CABLE driver (from vbcable folder)"
-            : "Установить драйвер VB-CABLE (из папки vbcable)";
+        InstallCableBtnText.Text = Loc.T(
+            "Установить драйвер VB-CABLE (из папки vbcable)",
+            "Install VB-CABLE driver (from vbcable folder)",
+            "VB-CABLE-Treiber installieren (aus vbcable-Ordner)",
+            "Instalar controlador VB-CABLE (desde carpeta vbcable)",
+            "Installer pilote VB-CABLE (depuis dossier vbcable)");
         RefreshBtnText.Text = Loc.Refresh;
         ParGroup.Header = Loc.SetParams;
-        LangGroup.Header = Loc.SetLang == "Язык:" ? "Язык / Language" : "Language / Язык";
+        LangGroup.Header = Loc.SetLang;
         CfgLabel.Text = Loc.SetConfigFile;
         OpenFolderBtnText.Text = Loc.OpenFolder;
         ResetBtnText.Text = Loc.ResetAll;
@@ -80,7 +93,14 @@ public partial class SettingsWindow : Window
     private void LangBox_Changed(object sender, SelectionChangedEventArgs e)
     {
         if (!_ready) return;
-        Loc.Lang = LangBox.SelectedIndex == 1 ? "en" : "ru";
+        Loc.Lang = LangBox.SelectedIndex switch
+        {
+            1 => "ru",
+            2 => "de",
+            3 => "es",
+            4 => "fr",
+            _ => "en"
+        };
         ApplyLang();
         UpdateParamLabels();
         UpdateVirtMic();

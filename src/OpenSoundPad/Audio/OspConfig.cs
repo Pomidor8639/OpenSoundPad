@@ -23,7 +23,8 @@ public sealed class OspConfig
     public float PadGain { get; set; } = 1.0f;
     public float InputPregain { get; set; } = 2.2f;
     public float GateThreshold { get; set; } = 0.003f;
-    public string Language { get; set; } = "ru";
+    public string Language { get; set; } = "en";
+    public bool LanguageChosen { get; set; } = false;
     public string Mode { get; set; } = "voicemod";
     public List<string> PadList { get; set; } = new();
     public Dictionary<string, string> PadFiles { get; set; } = new();
