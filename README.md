@@ -6,7 +6,7 @@
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
 [![Version](https://img.shields.io/badge/Version-v1.11.0-10B981?style=for-the-badge)](https://github.com/Pomidor8639/OpenSoundPad/releases)
 [![NAudio](https://img.shields.io/badge/NAudio-WASAPI-FF6F00?style=for-the-badge)](https://github.com/naudio/NAudio)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge)](LICENSE)
 
 **OSP (OpenSoundPad) is a lightweight, low-latency, real-time voice changer and full-featured soundpad for Windows with direct output to virtual microphones.**
 
@@ -165,4 +165,4 @@ dotnet publish src/OpenSoundPad/OpenSoundPad.csproj -c Release -r win-x64 --self
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [GNU General Public License v3.0](LICENSE).
