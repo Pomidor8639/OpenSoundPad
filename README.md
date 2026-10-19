@@ -4,7 +4,7 @@
 
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
-[![Version](https://img.shields.io/badge/Version-v1.11.0-10B981?style=for-the-badge)](https://github.com/Pomidor8639/OpenSoundPad/releases)
+[![Version](https://img.shields.io/badge/Version-v1.12.0-10B981?style=for-the-badge)](https://github.com/Pomidor8639/OpenSoundPad/releases)
 [![NAudio](https://img.shields.io/badge/NAudio-WASAPI-FF6F00?style=for-the-badge)](https://github.com/naudio/NAudio)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge)](LICENSE)
 [![AlternativeTo](https://img.shields.io/badge/AlternativeTo-OpenSoundPad-0078D4?style=for-the-badge&logo=alternativeto&logoColor=white)](https://alternativeto.net/software/opensoundpad/)
@@ -17,7 +17,7 @@
 
 ---
 
-## What's New in v1.11.0
+## What's New in v1.12.0
 
 - **First-Run Language Setup Screen**:
   - On the very first launch, users are greeted with a clean, focused language selection screen.
@@ -143,7 +143,7 @@ dotnet publish src/OpenSoundPad/OpenSoundPad.csproj -c Release -r win-x64 --self
 ### Описание
 **OSP (OpenSoundPad)** — бесплатный, легковесный и производительный войсчейнджер реального времени и полнофункциональный саундпад на C# (.NET 9) для Windows с прямым выводом в виртуальный микрофон.
 
-### Что нового в версии 1.11.0:
+### Что нового в версии 1.12.0:
 - **Экран выбора языка при первом запуске**: при самом первом запуске открывается чистое окно выбора языка, без лишних элементов. Выбор сохраняется, и программа сразу работает на выбранном языке.
 - **Поддержка 8 языков**: английский (English), русский (Русский), немецкий (Deutsch), испанский (Español), французский (Français), китайский (简体中文), японский (日本語) и корейский (한국어). Язык можно сменить в любой момент в «Настройках».
 - **Постоянное хранилище звуков**: все добавленные треки копируются в `%APPDATA%\OpenSoundPad\sounds\`. Музыка не пропадает, даже если удалить файлы из Загрузок.
