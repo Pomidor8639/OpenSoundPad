@@ -95,7 +95,18 @@
 
                 <!-- Язык -->
                 <GroupBox x:Name="LangGroup" Header="Язык / Language" Margin="0,0,0,10">
-                    <ComboBox x:Name="LangBox" Margin="0,2" SelectionChanged="LangBox_Changed"/>
+                    <ComboBox x:Name="LangBox" Margin="0,2" SelectionChanged="LangBox_Changed">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Border CornerRadius="2" ClipToBounds="True" Width="20" Height="14" Margin="0,0,8,0" VerticalAlignment="Center" BorderBrush="{StaticResource BorderDark}" BorderThickness="1">
+                                        <Image Source="{Binding FlagUri}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                 </GroupBox>
 
                 <!-- О приложении (About / GitHub) -->

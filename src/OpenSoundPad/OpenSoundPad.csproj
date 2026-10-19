@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <Resource Include="..\..\app_icon.ico" Link="app_icon.ico" />
+    <Resource Include="Flags\*.png" />
   </ItemGroup>
 
 </Project>

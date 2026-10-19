@@ -35,14 +35,17 @@ public partial class SettingsWindow : Window
         PregainSlider.ValueChanged += (_, _) => UpdateParamLabels();
         GateSlider.ValueChanged += (_, _) => UpdateParamLabels();
 
-        LangBox.Items.Add("English");
-        LangBox.Items.Add("Русский");
-        LangBox.Items.Add("Deutsch");
-        LangBox.Items.Add("Español");
-        LangBox.Items.Add("Français");
-        LangBox.Items.Add("简体中文");
-        LangBox.Items.Add("日本語");
-        LangBox.Items.Add("한국어");
+        LangBox.ItemsSource = new List<LanguageOption>
+        {
+            new() { Code = "en", Name = "English", FlagUri = "pack://application:,,,/Flags/gb.png" },
+            new() { Code = "ru", Name = "Русский", FlagUri = "pack://application:,,,/Flags/ru.png" },
+            new() { Code = "de", Name = "Deutsch", FlagUri = "pack://application:,,,/Flags/de.png" },
+            new() { Code = "es", Name = "Español", FlagUri = "pack://application:,,,/Flags/es.png" },
+            new() { Code = "fr", Name = "Français", FlagUri = "pack://application:,,,/Flags/fr.png" },
+            new() { Code = "zh", Name = "简体中文", FlagUri = "pack://application:,,,/Flags/cn.png" },
+            new() { Code = "ja", Name = "日本語", FlagUri = "pack://application:,,,/Flags/jp.png" },
+            new() { Code = "ko", Name = "한국어", FlagUri = "pack://application:,,,/Flags/kr.png" },
+        };
         LangBox.SelectedIndex = config.Language switch
         {
             "ru" => 1,
@@ -102,17 +105,24 @@ public partial class SettingsWindow : Window
     private void LangBox_Changed(object sender, SelectionChangedEventArgs e)
     {
         if (!_ready) return;
-        Loc.Lang = LangBox.SelectedIndex switch
+        if (LangBox.SelectedItem is LanguageOption opt)
         {
-            1 => "ru",
-            2 => "de",
-            3 => "es",
-            4 => "fr",
-            5 => "zh",
-            6 => "ja",
-            7 => "ko",
-            _ => "en"
-        };
+            Loc.Lang = opt.Code;
+        }
+        else
+        {
+            Loc.Lang = LangBox.SelectedIndex switch
+            {
+                1 => "ru",
+                2 => "de",
+                3 => "es",
+                4 => "fr",
+                5 => "zh",
+                6 => "ja",
+                7 => "ko",
+                _ => "en"
+            };
+        }
         ApplyLang();
         UpdateParamLabels();
         UpdateVirtMic();
@@ -269,4 +279,11 @@ public partial class SettingsWindow : Window
         {
         }
     }
+}
+
+public sealed class LanguageOption
+{
+    public required string Code { get; init; }
+    public required string Name { get; init; }
+    public required string FlagUri { get; init; }
 }
