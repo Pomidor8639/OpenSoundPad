@@ -147,7 +147,7 @@ public partial class MainWindow : Window
         ColKey.Header = Loc.ColKey;
         CtxPlay.Header = Loc.PlayPad;
         CtxStop.Header = Loc.StopPad;
-        CtxRepeat.Header = Loc.T("Зациклить / Повтор (R)", "Loop / Repeat (R)", "Wiederholen (R)", "Bucle / Repetir (R)", "Boucle / Répéter (R)");
+        CtxRepeat.Header = Loc.T("Зациклить / Повтор (R)", "Loop / Repeat (R)", "Wiederholen (R)", "Bucle / Repetir (R)", "Boucle / Répéter (R)", "循环 / 重复 (R)", "ループ / リピート (R)", "반복 재생 (R)");
         CtxRename.Header = Loc.RenameSound;
         CtxDelete.Header = Loc.RemoveSound + " (Del)";
         CtxClearAll.Header = Loc.ClearAllPads;

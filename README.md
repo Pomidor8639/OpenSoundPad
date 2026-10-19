@@ -23,8 +23,8 @@
   - On the very first launch, users are greeted with a clean, focused language selection screen.
   - Nothing else is shown until a language is chosen.
   - Your selection is remembered, and OpenSoundPad opens immediately in your chosen language on every subsequent launch.
-- **Support for 5 Languages**:
-  - Full native translations for: 🇬🇧 **English**, 🇷🇺 **Русский**, 🇩🇪 **Deutsch**, 🇪🇸 **Español**, and 🇫🇷 **Français**.
+- **Support for 8 Languages**:
+  - Full native translations for: 🇬🇧 **English**, 🇷🇺 **Русский**, 🇩🇪 **Deutsch**, 🇪🇸 **Español**, 🇫🇷 **Français**, 🇨🇳 **简体中文**, 🇯🇵 **日本語**, and 🇰🇷 **한국어**.
   - All UI elements, dials, dialogs, presets, and tooltips are localized.
   - Language can be switched anytime in Settings.
 - **Persistent Sound Storage**:
@@ -145,7 +145,7 @@ dotnet publish src/OpenSoundPad/OpenSoundPad.csproj -c Release -r win-x64 --self
 
 ### Что нового в версии 1.11.0:
 - **Экран выбора языка при первом запуске**: при самом первом запуске открывается чистое окно выбора языка, без лишних элементов. Выбор сохраняется, и программа сразу работает на выбранном языке.
-- **Поддержка 5 языков**: английский (English), русский (Русский), немецкий (Deutsch), испанский (Español) и французский (Français). Язык можно сменить в любой момент в «Настройках».
+- **Поддержка 8 языков**: английский (English), русский (Русский), немецкий (Deutsch), испанский (Español), французский (Français), китайский (简体中文), японский (日本語) и корейский (한국어). Язык можно сменить в любой момент в «Настройках».
 - **Постоянное хранилище звуков**: все добавленные треки копируются в `%APPDATA%\OpenSoundPad\sounds\`. Музыка не пропадает, даже если удалить файлы из Загрузок.
 - **Переименование треков**: правый клик по треку -> «Переименовать…» для задания любого пользовательского названия.
 - **Крутилка громкости в саундпаде**: горизонтальный ползунок заменен на стильную крутилку громкости (0–200%).

@@ -62,12 +62,27 @@ public partial class WelcomeLanguageWindow : Window
         CardFr.BorderThickness = lang == "fr" ? new Thickness(1.5) : new Thickness(1);
         CheckFr.Visibility = lang == "fr" ? Visibility.Visible : Visibility.Collapsed;
 
+        CardZh.BorderBrush = lang == "zh" ? greenBrush : darkBrush;
+        CardZh.BorderThickness = lang == "zh" ? new Thickness(1.5) : new Thickness(1);
+        CheckZh.Visibility = lang == "zh" ? Visibility.Visible : Visibility.Collapsed;
+
+        CardJa.BorderBrush = lang == "ja" ? greenBrush : darkBrush;
+        CardJa.BorderThickness = lang == "ja" ? new Thickness(1.5) : new Thickness(1);
+        CheckJa.Visibility = lang == "ja" ? Visibility.Visible : Visibility.Collapsed;
+
+        CardKo.BorderBrush = lang == "ko" ? greenBrush : darkBrush;
+        CardKo.BorderThickness = lang == "ko" ? new Thickness(1.5) : new Thickness(1);
+        CheckKo.Visibility = lang == "ko" ? Visibility.Visible : Visibility.Collapsed;
+
         ContinueBtn.Content = lang switch
         {
             "ru" => "Продолжить",
             "de" => "Weiter",
             "es" => "Continuar",
             "fr" => "Continuer",
+            "zh" => "继续",
+            "ja" => "次へ",
+            "ko" => "계속",
             _ => "Continue"
         };
     }
@@ -77,6 +92,9 @@ public partial class WelcomeLanguageWindow : Window
     private void CardDe_Click(object sender, MouseButtonEventArgs e) => SelectLang("de");
     private void CardEs_Click(object sender, MouseButtonEventArgs e) => SelectLang("es");
     private void CardFr_Click(object sender, MouseButtonEventArgs e) => SelectLang("fr");
+    private void CardZh_Click(object sender, MouseButtonEventArgs e) => SelectLang("zh");
+    private void CardJa_Click(object sender, MouseButtonEventArgs e) => SelectLang("ja");
+    private void CardKo_Click(object sender, MouseButtonEventArgs e) => SelectLang("ko");
 
     private void ContinueBtn_Click(object sender, RoutedEventArgs e)
     {

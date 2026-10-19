@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="OpenSoundPad — Select Language"
-        Width="500" Height="490"
+        Width="620" Height="470"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BgWindow}"
@@ -14,9 +14,9 @@
 
     <Grid Background="{StaticResource BgWindow}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> <!-- TitleBar -->
-            <RowDefinition Height="*"/>    <!-- Content -->
-            <RowDefinition Height="Auto"/> <!-- Bottom bar -->
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- TitleBar -->
@@ -35,16 +35,27 @@
         </Border>
 
         <!-- Body -->
-        <StackPanel Grid.Row="1" Margin="24,20,24,10" VerticalAlignment="Top">
-            <StackPanel HorizontalAlignment="Center" Margin="0,0,0,16">
+        <StackPanel Grid.Row="1" Margin="24,18,24,10" VerticalAlignment="Top">
+            <StackPanel HorizontalAlignment="Center" Margin="0,0,0,14">
                 <TextBlock Text="Welcome to OpenSoundPad" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextPrimary}" HorizontalAlignment="Center"/>
-                <TextBlock x:Name="SubPromptText" Text="Please choose your preferred language / Выберите язык" FontSize="11" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="SubPromptText" Text="Please choose your preferred language / 选择语言 / 言語を選択 / 언어 선택" FontSize="11" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0" HorizontalAlignment="Center"/>
             </StackPanel>
 
-            <!-- Language Cards -->
-            <StackPanel Margin="0,6,0,0">
+            <!-- Language Cards Grid: 2 columns x 4 rows -->
+            <Grid Margin="0,4,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
                 <!-- English -->
-                <Border x:Name="CardEn" Background="{StaticResource BgCard}" BorderBrush="{StaticResource AccentGreen}" BorderThickness="1.5" CornerRadius="6" Padding="14,10" Margin="0,0,0,8" Cursor="Hand" MouseLeftButtonDown="CardEn_Click">
+                <Border x:Name="CardEn" Grid.Row="0" Grid.Column="0" Background="{StaticResource BgCard}" BorderBrush="{StaticResource AccentGreen}" BorderThickness="1.5" CornerRadius="6" Padding="14,10" Margin="0,0,6,8" Cursor="Hand" MouseLeftButtonDown="CardEn_Click">
                     <DockPanel LastChildFill="True">
                         <TextBlock Text="🇬🇧" FontSize="18" VerticalAlignment="Center" Margin="0,0,12,0"/>
                         <Path x:Name="CheckEn" Data="{StaticResource GeoCheck}" Width="14" Height="14" Style="{StaticResource GreenIcon}" DockPanel.Dock="Right" VerticalAlignment="Center" Visibility="Visible"/>
@@ -56,7 +67,7 @@
                 </Border>
 
                 <!-- Русский -->
-                <Border x:Name="CardRu" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,0,0,8" Cursor="Hand" MouseLeftButtonDown="CardRu_Click">
+                <Border x:Name="CardRu" Grid.Row="1" Grid.Column="0" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,0,6,8" Cursor="Hand" MouseLeftButtonDown="CardRu_Click">
                     <DockPanel LastChildFill="True">
                         <TextBlock Text="🇷🇺" FontSize="18" VerticalAlignment="Center" Margin="0,0,12,0"/>
                         <Path x:Name="CheckRu" Data="{StaticResource GeoCheck}" Width="14" Height="14" Style="{StaticResource GreenIcon}" DockPanel.Dock="Right" VerticalAlignment="Center" Visibility="Collapsed"/>
@@ -68,7 +79,7 @@
                 </Border>
 
                 <!-- Deutsch -->
-                <Border x:Name="CardDe" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,0,0,8" Cursor="Hand" MouseLeftButtonDown="CardDe_Click">
+                <Border x:Name="CardDe" Grid.Row="2" Grid.Column="0" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,0,6,8" Cursor="Hand" MouseLeftButtonDown="CardDe_Click">
                     <DockPanel LastChildFill="True">
                         <TextBlock Text="🇩🇪" FontSize="18" VerticalAlignment="Center" Margin="0,0,12,0"/>
                         <Path x:Name="CheckDe" Data="{StaticResource GeoCheck}" Width="14" Height="14" Style="{StaticResource GreenIcon}" DockPanel.Dock="Right" VerticalAlignment="Center" Visibility="Collapsed"/>
@@ -80,7 +91,7 @@
                 </Border>
 
                 <!-- Español -->
-                <Border x:Name="CardEs" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,0,0,8" Cursor="Hand" MouseLeftButtonDown="CardEs_Click">
+                <Border x:Name="CardEs" Grid.Row="3" Grid.Column="0" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,0,6,0" Cursor="Hand" MouseLeftButtonDown="CardEs_Click">
                     <DockPanel LastChildFill="True">
                         <TextBlock Text="🇪🇸" FontSize="18" VerticalAlignment="Center" Margin="0,0,12,0"/>
                         <Path x:Name="CheckEs" Data="{StaticResource GeoCheck}" Width="14" Height="14" Style="{StaticResource GreenIcon}" DockPanel.Dock="Right" VerticalAlignment="Center" Visibility="Collapsed"/>
@@ -92,7 +103,7 @@
                 </Border>
 
                 <!-- Français -->
-                <Border x:Name="CardFr" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="6" Padding="14,10" Cursor="Hand" MouseLeftButtonDown="CardFr_Click">
+                <Border x:Name="CardFr" Grid.Row="0" Grid.Column="1" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="6,0,0,8" Cursor="Hand" MouseLeftButtonDown="CardFr_Click">
                     <DockPanel LastChildFill="True">
                         <TextBlock Text="🇫🇷" FontSize="18" VerticalAlignment="Center" Margin="0,0,12,0"/>
                         <Path x:Name="CheckFr" Data="{StaticResource GeoCheck}" Width="14" Height="14" Style="{StaticResource GreenIcon}" DockPanel.Dock="Right" VerticalAlignment="Center" Visibility="Collapsed"/>
@@ -102,7 +113,43 @@
                         </StackPanel>
                     </DockPanel>
                 </Border>
-            </StackPanel>
+
+                <!-- 简体中文 -->
+                <Border x:Name="CardZh" Grid.Row="1" Grid.Column="1" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="6,0,0,8" Cursor="Hand" MouseLeftButtonDown="CardZh_Click">
+                    <DockPanel LastChildFill="True">
+                        <TextBlock Text="🇨🇳" FontSize="18" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                        <Path x:Name="CheckZh" Data="{StaticResource GeoCheck}" Width="14" Height="14" Style="{StaticResource GreenIcon}" DockPanel.Dock="Right" VerticalAlignment="Center" Visibility="Collapsed"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="简体中文" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource TextPrimary}"/>
+                            <TextBlock Text="Chinese" FontSize="10" Foreground="{StaticResource TextSubtle}"/>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <!-- 日本語 -->
+                <Border x:Name="CardJa" Grid.Row="2" Grid.Column="1" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="6,0,0,8" Cursor="Hand" MouseLeftButtonDown="CardJa_Click">
+                    <DockPanel LastChildFill="True">
+                        <TextBlock Text="🇯🇵" FontSize="18" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                        <Path x:Name="CheckJa" Data="{StaticResource GeoCheck}" Width="14" Height="14" Style="{StaticResource GreenIcon}" DockPanel.Dock="Right" VerticalAlignment="Center" Visibility="Collapsed"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="日本語" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource TextPrimary}"/>
+                            <TextBlock Text="Japanese" FontSize="10" Foreground="{StaticResource TextSubtle}"/>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <!-- 한국어 -->
+                <Border x:Name="CardKo" Grid.Row="3" Grid.Column="1" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="6,0,0,0" Cursor="Hand" MouseLeftButtonDown="CardKo_Click">
+                    <DockPanel LastChildFill="True">
+                        <TextBlock Text="🇰🇷" FontSize="18" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                        <Path x:Name="CheckKo" Data="{StaticResource GeoCheck}" Width="14" Height="14" Style="{StaticResource GreenIcon}" DockPanel.Dock="Right" VerticalAlignment="Center" Visibility="Collapsed"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="한국어" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource TextPrimary}"/>
+                            <TextBlock Text="Korean" FontSize="10" Foreground="{StaticResource TextSubtle}"/>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+            </Grid>
         </StackPanel>
 
         <!-- Bottom bar -->

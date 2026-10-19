@@ -21,7 +21,7 @@ public partial class RenameWindow : Window
         TitleText.Text = Loc.RenameSound;
         PromptText.Text = Loc.EnterNewName;
         CancelBtn.Content = Loc.Cancel;
-        OkBtn.Content = Loc.T("Сохранить", "Save", "Speichern", "Guardar", "Enregistrer");
+        OkBtn.Content = Loc.T("Сохранить", "Save", "Speichern", "Guardar", "Enregistrer", "保存", "保存", "저장");
     }
 
     [DllImport("dwmapi.dll", PreserveSig = true)]
@@ -60,7 +60,10 @@ public partial class RenameWindow : Window
                 "Name cannot be empty.",
                 "Name darf nicht leer sein.",
                 "El nombre no puede estar vacío.",
-                "Le nom ne peut pas être vide."), "OSP", MessageBoxButton.OK, MessageBoxImage.Warning);
+                "Le nom ne peut pas être vide.",
+                "名称不能为空。",
+                "名前を空にすることはできません。",
+                "이름은 비워둘 수 없습니다."), "OSP", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
         ResultName = val;

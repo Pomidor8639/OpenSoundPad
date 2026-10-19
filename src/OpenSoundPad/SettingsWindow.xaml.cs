@@ -40,12 +40,18 @@ public partial class SettingsWindow : Window
         LangBox.Items.Add("Deutsch");
         LangBox.Items.Add("Español");
         LangBox.Items.Add("Français");
+        LangBox.Items.Add("简体中文");
+        LangBox.Items.Add("日本語");
+        LangBox.Items.Add("한국어");
         LangBox.SelectedIndex = config.Language switch
         {
             "ru" => 1,
             "de" => 2,
             "es" => 3,
             "fr" => 4,
+            "zh" => 5,
+            "ja" => 6,
+            "ko" => 7,
             _ => 0
         };
 
@@ -67,7 +73,10 @@ public partial class SettingsWindow : Window
             "Install VB-CABLE driver (from vbcable folder)",
             "VB-CABLE-Treiber installieren (aus vbcable-Ordner)",
             "Instalar controlador VB-CABLE (desde carpeta vbcable)",
-            "Installer pilote VB-CABLE (depuis dossier vbcable)");
+            "Installer pilote VB-CABLE (depuis dossier vbcable)",
+            "安装 VB-CABLE 驱动 (从 vbcable 文件夹)",
+            "VB-CABLE ドライバーをインストール (vbcable フォルダより)",
+            "VB-CABLE 드라이버 설치 (vbcable 폴더에서)");
         RefreshBtnText.Text = Loc.Refresh;
         ParGroup.Header = Loc.SetParams;
         LangGroup.Header = Loc.SetLang;
@@ -99,6 +108,9 @@ public partial class SettingsWindow : Window
             2 => "de",
             3 => "es",
             4 => "fr",
+            5 => "zh",
+            6 => "ja",
+            7 => "ko",
             _ => "en"
         };
         ApplyLang();
