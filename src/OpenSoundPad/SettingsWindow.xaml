@@ -58,7 +58,7 @@
                             <StackPanel>
                                 <DockPanel Margin="0,0,0,6">
                                     <TextBlock x:Name="ApoLabel" Text="Перехват микрофона (APO):" Foreground="{StaticResource TextPrimary}" FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
-                                    <Border x:Name="ApoBadgeBorder" CornerRadius="3" Background="{StaticResource BgMedium}" Padding="6,2" HorizontalAlignment="Right">
+                                    <Border x:Name="ApoBadgeBorder" CornerRadius="3" Background="{StaticResource BgCardElevated}" Padding="6,2" HorizontalAlignment="Right">
                                         <TextBlock x:Name="ApoStatusBadge" Text="Не установлен" Foreground="{StaticResource TextMuted}" FontSize="10" FontWeight="SemiBold"/>
                                     </Border>
                                 </DockPanel>
