@@ -152,14 +152,14 @@ public partial class SettingsWindow : Window
         if (isInstalled)
         {
             ApoStatusBadge.Text = Loc.ApoActive;
-            ApoStatusBadge.Foreground = (Brush)FindResource("AccentGreen");
+            ApoStatusBadge.Foreground = TryFindResource("AccentGreen") as Brush ?? Brushes.LightGreen;
             InstallApoBtn.Visibility = Visibility.Collapsed;
             UninstallApoBtn.Visibility = Visibility.Visible;
         }
         else
         {
             ApoStatusBadge.Text = Loc.ApoNotInstalled;
-            ApoStatusBadge.Foreground = (Brush)FindResource("TextMuted");
+            ApoStatusBadge.Foreground = TryFindResource("TextMuted") as Brush ?? Brushes.Gray;
             InstallApoBtn.Visibility = Visibility.Visible;
             UninstallApoBtn.Visibility = Visibility.Collapsed;
         }

@@ -31,18 +31,24 @@ public partial class MainWindow : Window
 
     public MainWindow(OspConfig config)
     {
+        App.Log("MainWindow constructor started");
         InitializeComponent();
+        App.Log("MainWindow InitializeComponent done");
         StateChanged += MainWindow_StateChanged;
         _config = config;
         Loc.Lang = _config.Language;
 
+        App.Log("MainWindow ApplyLanguage");
         ApplyLanguage();
+        App.Log("MainWindow RefreshVoicesList");
         RefreshVoicesList();
+        App.Log("MainWindow RefreshPadList");
         RefreshPadList();
-        UpdateDeviceDisplay();
+        App.Log("MainWindow ApplyConfigToUi");
         ApplyConfigToUi();
 
         // Восстановление режима (войсмод или саундпад)
+        App.Log("MainWindow SetMode");
         SetMode(_config.Mode == "soundpad" ? "soundpad" : "voicemod", saveConfig: false);
 
         _vuTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(45) };
@@ -72,6 +78,7 @@ public partial class MainWindow : Window
         Closed += (_, _) => { _vuTimer.Stop(); _engine.Stop(); _config.Save(); };
         _initialized = true;
         _updatingUi = false;
+        App.Log("MainWindow constructor complete");
     }
 
     // ---------- переключение режимов (Войсмод / Саундпад) ----------
@@ -677,17 +684,22 @@ public partial class MainWindow : Window
 
     private void UpdateDeviceDisplay()
     {
+        App.Log("UpdateDeviceDisplay start");
         string? inDev = FindDeviceName(OspEngine.GetInputMicrophones(), _config.InputDeviceId);
+        App.Log("UpdateDeviceDisplay inDev=" + inDev);
         string? monDev = FindDeviceName(OspEngine.GetOutputDevices(), _config.MonitorDeviceId);
+        App.Log("UpdateDeviceDisplay monDev=" + monDev);
 
         InputDevText.Text = inDev ?? Loc.NotSelected;
         MonitorDevText.Text = monDev ?? Loc.MonitorOff;
 
         bool isApo = !string.IsNullOrEmpty(_config.InputDeviceId) && Audio.OspApoManager.IsApoInstalledOnEndpoint(_config.InputDeviceId);
+        App.Log("UpdateDeviceDisplay isApo=" + isApo);
         ApoStatusText.Text = isApo ? Loc.ApoActive : Loc.ApoNotInstalled;
         ApoStatusText.Foreground = isApo
-            ? (Brush)FindResource("AccentGreen")
-            : (Brush)FindResource("TextMuted");
+            ? (TryFindResource("AccentGreen") as Brush ?? Brushes.LightGreen)
+            : (TryFindResource("TextMuted") as Brush ?? Brushes.Gray);
+        App.Log("UpdateDeviceDisplay done");
     }
 
     // ---------- меню и тулбар ----------

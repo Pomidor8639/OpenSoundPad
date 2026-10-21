@@ -34,7 +34,7 @@ public static class OspApoManager
     public static string ExtractGuid(string endpointId)
     {
         if (string.IsNullOrWhiteSpace(endpointId)) return string.Empty;
-        int start = endpointId.IndexOf('{');
+        int start = endpointId.LastIndexOf('{');
         int end = endpointId.LastIndexOf('}');
         if (start >= 0 && end > start)
         {

@@ -6,7 +6,7 @@
         MinHeight="620" MinWidth="960"
         Background="{StaticResource BgWindow}" Foreground="{StaticResource TextPrimary}"
         WindowStartupLocation="CenterScreen"
-        Icon="pack://application:,,,/app_icon.ico">
+        Icon="pack://application:,,,/OpenSoundPad;component/app_icon.ico">
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="{StaticResource TextMuted}"/>
@@ -47,7 +47,7 @@
 
                 <!-- Слева: Логотип приложения + Название OSP -->
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="10,0,10,0">
-                    <Image Source="pack://application:,,,/app_icon.ico" Width="16" Height="16" Margin="0,0,8,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <Image Source="pack://application:,,,/OpenSoundPad;component/app_icon.ico" Width="16" Height="16" Margin="0,0,8,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                     <TextBlock Text="OSP" FontWeight="Bold" FontSize="12" Foreground="{StaticResource AccentGreen}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                 </StackPanel>
 

@@ -7,7 +7,7 @@
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BgWindow}"
         Foreground="{StaticResource TextPrimary}"
-        Icon="pack://application:,,,/app_icon.ico">
+        Icon="pack://application:,,,/OpenSoundPad;component/app_icon.ico">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="36" ResizeBorderThickness="4" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
@@ -28,7 +28,7 @@
                     </Button>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
-                    <Image Source="pack://application:,,,/app_icon.ico" Width="16" Height="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                    <Image Source="pack://application:,,,/OpenSoundPad;component/app_icon.ico" Width="16" Height="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
                     <TextBlock Text="OSP — OpenSoundPad" FontWeight="Bold" FontSize="11" Foreground="{StaticResource AccentGreen}" VerticalAlignment="Center"/>
                 </StackPanel>
             </DockPanel>

@@ -52,6 +52,17 @@ void COspApo::EnsureShmConnected()
         {
             m_hMapFile = OpenFileMappingW(FILE_MAP_READ | FILE_MAP_WRITE, FALSE, OSP_SHM_NAME_LOCAL);
         }
+        if (!m_hMapFile)
+        {
+            SECURITY_DESCRIPTOR sd;
+            InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
+            SetSecurityDescriptorDacl(&sd, TRUE, NULL, FALSE);
+            SECURITY_ATTRIBUTES sa;
+            sa.nLength = sizeof(sa);
+            sa.lpSecurityDescriptor = &sd;
+            sa.bInheritHandle = FALSE;
+            m_hMapFile = CreateFileMappingW(INVALID_HANDLE_VALUE, &sa, PAGE_READWRITE, 0, sizeof(OspApoSharedMemory), OSP_SHM_NAME);
+        }
     }
 
     if (m_hMapFile && !m_pShm)

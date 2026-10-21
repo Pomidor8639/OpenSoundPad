@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 
 namespace OpenSoundPad.Audio;
@@ -10,8 +8,9 @@ public sealed class OspApoClient : IDisposable
     private const uint Magic = 0x4F535041;
     private const uint Version = 1;
     private const int RingCapacity = 65536;
-    private const string ShmNameGlobal = @"Global\OpenSoundPadApoShm";
-    private const string ShmNameLocal = @"Local\OpenSoundPadApoShm";
+    private const uint FileMapAllAccess = 0x000F001F;
+    private const uint PageReadWrite = 0x04;
+    private static readonly IntPtr InvalidHandleValue = new IntPtr(-1);
 
     private const int OffsetMagic = 0;
     private const int OffsetVersion = 4;
@@ -25,114 +24,162 @@ public sealed class OspApoClient : IDisposable
     private const int OffsetRingBuffer = 36;
     private const int TotalShmSize = OffsetRingBuffer + (RingCapacity * sizeof(float));
 
-    private MemoryMappedFile? _mmf;
-    private MemoryMappedViewAccessor? _accessor;
+    private const string ShmNameGlobal = @"Global\OpenSoundPadApoShm";
+    private const string ShmNameLocal = @"Local\OpenSoundPadApoShm";
+
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    private static extern IntPtr OpenFileMapping(uint dwDesiredAccess, bool bInheritHandle, string lpName);
+
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    private static extern IntPtr CreateFileMapping(IntPtr hFile, IntPtr lpAttributes, uint flProtect, uint dwMaximumSizeHigh, uint dwMaximumSizeLow, string lpName);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern IntPtr MapViewOfFile(IntPtr hFileMappingObject, uint dwDesiredAccess, uint dwFileOffsetHigh, uint dwFileOffsetLow, UIntPtr dwNumberOfBytesToMap);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool UnmapViewOfFile(IntPtr lpBaseAddress);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(IntPtr hObject);
+
+    private IntPtr _hMap = IntPtr.Zero;
+    private IntPtr _pView = IntPtr.Zero;
     private readonly object _lock = new();
     private bool _disposed;
 
-    public bool IsConnected => _accessor != null;
+    public bool IsConnected => _pView != IntPtr.Zero;
 
     public OspApoClient()
     {
         InitializeMemory();
     }
 
-    private void InitializeMemory()
+    public void EnsureConnected()
     {
-        try
+        if (_pView == IntPtr.Zero)
         {
-            try
-            {
-                _mmf = MemoryMappedFile.CreateOrOpen(ShmNameGlobal, TotalShmSize, MemoryMappedFileAccess.ReadWrite);
-            }
-            catch
-            {
-                _mmf = MemoryMappedFile.CreateOrOpen(ShmNameLocal, TotalShmSize, MemoryMappedFileAccess.ReadWrite);
-            }
-
-            _accessor = _mmf.CreateViewAccessor(0, TotalShmSize, MemoryMappedFileAccess.ReadWrite);
-
-            _accessor.Write(OffsetMagic, Magic);
-            _accessor.Write(OffsetVersion, Version);
-            _accessor.Write(OffsetActive, 1u);
-            _accessor.Write(OffsetMode, 1u);
-            _accessor.Write(OffsetSampleRate, 48000u);
-            _accessor.Write(OffsetChannels, 1u);
-            _accessor.Write(OffsetWriteIndex, 0u);
-            _accessor.Write(OffsetReadIndex, 0u);
-            _accessor.Write(OffsetVolume, 1.0f);
-        }
-        catch
-        {
-            _accessor?.Dispose();
-            _accessor = null;
-            _mmf?.Dispose();
-            _mmf = null;
+            InitializeMemory();
         }
     }
 
-    public void WriteSamples(float[] samples, int offset, int count, uint mode, float volume)
+    private void InitializeMemory()
     {
-        if (_accessor == null || count <= 0) return;
-
         lock (_lock)
         {
             try
             {
-                _accessor.Write(OffsetActive, 1u);
-                _accessor.Write(OffsetMode, mode);
-                _accessor.Write(OffsetVolume, volume);
+                _hMap = OpenFileMapping(FileMapAllAccess, false, ShmNameGlobal);
 
-                uint wp = _accessor.ReadUInt32(OffsetWriteIndex);
-                uint rp = _accessor.ReadUInt32(OffsetReadIndex);
-
-                uint lag = (wp >= rp) ? (wp - rp) : ((uint)RingCapacity - rp + wp);
-                if (lag > 16384)
+                if (_hMap == IntPtr.Zero)
                 {
-                    wp = (rp + 480) % RingCapacity;
+                    _hMap = OpenFileMapping(FileMapAllAccess, false, ShmNameLocal);
                 }
 
-                for (int i = 0; i < count; i++)
+                if (_hMap == IntPtr.Zero)
                 {
-                    int pos = (int)((wp + i) % RingCapacity);
-                    int byteOffset = OffsetRingBuffer + (pos * sizeof(float));
-                    _accessor.Write(byteOffset, samples[offset + i]);
+                    _hMap = CreateFileMapping(InvalidHandleValue, IntPtr.Zero, PageReadWrite, 0, (uint)TotalShmSize, ShmNameLocal);
                 }
 
-                uint newWp = (wp + (uint)count) % RingCapacity;
-                _accessor.Write(OffsetWriteIndex, newWp);
+                if (_hMap != IntPtr.Zero)
+                {
+                    _pView = MapViewOfFile(_hMap, FileMapAllAccess, 0, 0, new UIntPtr((uint)TotalShmSize));
+                    if (_pView != IntPtr.Zero)
+                    {
+                        Marshal.WriteInt32(_pView, OffsetMagic, (int)Magic);
+                        Marshal.WriteInt32(_pView, OffsetVersion, (int)Version);
+                        Marshal.WriteInt32(_pView, OffsetActive, 1);
+                        Marshal.WriteInt32(_pView, OffsetMode, 1);
+                        Marshal.WriteInt32(_pView, OffsetSampleRate, 48000);
+                        Marshal.WriteInt32(_pView, OffsetChannels, 1);
+                        Marshal.WriteInt32(_pView, OffsetWriteIndex, 0);
+                        Marshal.WriteInt32(_pView, OffsetReadIndex, 0);
+                        Marshal.Copy(new[] { 1.0f }, 0, IntPtr.Add(_pView, OffsetVolume), 1);
+                    }
+                }
             }
             catch
             {
+                Cleanup();
             }
         }
     }
 
     public void SetActive(bool active)
     {
-        if (_accessor == null) return;
-        try
+        EnsureConnected();
+        if (_pView == IntPtr.Zero) return;
+        lock (_lock)
         {
-            _accessor.Write(OffsetActive, active ? 1u : 0u);
+            try
+            {
+                Marshal.WriteInt32(_pView, OffsetActive, active ? 1 : 0);
+            }
+            catch { }
         }
-        catch { }
+    }
+
+    public void WriteSamples(float[] samples, int offset, int count, uint mode, float volume)
+    {
+        EnsureConnected();
+        if (_pView == IntPtr.Zero || count <= 0) return;
+
+        lock (_lock)
+        {
+            try
+            {
+                Marshal.WriteInt32(_pView, OffsetActive, 1);
+                Marshal.WriteInt32(_pView, OffsetMode, (int)mode);
+                Marshal.Copy(new[] { volume }, 0, IntPtr.Add(_pView, OffsetVolume), 1);
+
+                uint wp = (uint)Marshal.ReadInt32(_pView, OffsetWriteIndex);
+                uint rp = (uint)Marshal.ReadInt32(_pView, OffsetReadIndex);
+
+                uint lag = (wp >= rp) ? (wp - rp) : ((uint)RingCapacity - rp + wp);
+                if (lag > 16384)
+                {
+                    wp = (rp + 480) % (uint)RingCapacity;
+                }
+
+                IntPtr ringBase = IntPtr.Add(_pView, OffsetRingBuffer);
+
+                int firstChunk = Math.Min(count, RingCapacity - (int)wp);
+                Marshal.Copy(samples, offset, IntPtr.Add(ringBase, (int)wp * sizeof(float)), firstChunk);
+
+                if (firstChunk < count)
+                {
+                    int secondChunk = count - firstChunk;
+                    Marshal.Copy(samples, offset + firstChunk, ringBase, secondChunk);
+                }
+
+                uint newWp = (wp + (uint)count) % (uint)RingCapacity;
+                Marshal.WriteInt32(_pView, OffsetWriteIndex, (int)newWp);
+            }
+            catch { }
+        }
+    }
+
+    private void Cleanup()
+    {
+        if (_pView != IntPtr.Zero)
+        {
+            try { UnmapViewOfFile(_pView); } catch { }
+            _pView = IntPtr.Zero;
+        }
+        if (_hMap != IntPtr.Zero)
+        {
+            try { CloseHandle(_hMap); } catch { }
+            _hMap = IntPtr.Zero;
+        }
     }
 
     public void Dispose()
     {
         if (_disposed) return;
         _disposed = true;
-        try
+        SetActive(false);
+        lock (_lock)
         {
-            if (_accessor != null)
-            {
-                _accessor.Write(OffsetActive, 0u);
-                _accessor.Dispose();
-                _accessor = null;
-            }
-            _mmf?.Dispose();
-            _mmf = null;
+            Cleanup();
         }
-        catch { }
     }
 }

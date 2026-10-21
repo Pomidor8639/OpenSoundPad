@@ -8,7 +8,7 @@
         Background="{StaticResource BgWindow}"
         Foreground="{StaticResource TextPrimary}"
         ShowInTaskbar="False"
-        Icon="pack://application:,,,/app_icon.ico">
+        Icon="pack://application:,,,/OpenSoundPad;component/app_icon.ico">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="34" ResizeBorderThickness="4" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>

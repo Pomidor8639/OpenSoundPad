@@ -5,7 +5,7 @@
         MinHeight="540" MinWidth="480"
         Background="{StaticResource BgWindow}" Foreground="{StaticResource TextPrimary}"
         WindowStartupLocation="CenterOwner"
-        Icon="pack://application:,,,/app_icon.ico">
+        Icon="pack://application:,,,/OpenSoundPad;component/app_icon.ico">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="36"
                       ResizeBorderThickness="6"
