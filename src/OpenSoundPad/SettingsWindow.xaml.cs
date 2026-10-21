@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using OpenSoundPad.Audio;
 
 namespace OpenSoundPad;
@@ -24,10 +25,9 @@ public partial class SettingsWindow : Window
         ApplyLang();
         RefreshLists();
         SelectById(InputBox, config.InputDeviceId);
-        SelectById(CableBox, config.OutputDeviceId);
         SelectById(MonitorBox, config.MonitorDeviceId);
-        CableBox.SelectionChanged += (_, _) => UpdateVirtMic();
-        UpdateVirtMic();
+        InputBox.SelectionChanged += (_, _) => UpdateApoStatus();
+        UpdateApoStatus();
 
         PregainSlider.Value = config.InputPregain * 100;
         GateSlider.Value = config.GateThreshold * 10000;
@@ -67,19 +67,11 @@ public partial class SettingsWindow : Window
         Title = Loc.SettingsTitle;
         DevGroup.Header = Loc.SetDevices;
         MicLabel.Text = Loc.SetMic;
-        bool hasCable = OspEngine.HasVirtualCable();
-        CableLabel.Text = hasCable ? Loc.SetCable : Loc.SetCableFallback;
         MonLabel.Text = Loc.SetMonitor;
-        VirtLabel.Text = hasCable ? Loc.SetVirtInSystem : Loc.SetVirtFallback;
-        InstallCableBtnText.Text = Loc.T(
-            "Установить драйвер VB-CABLE (из папки vbcable)",
-            "Install VB-CABLE driver (from vbcable folder)",
-            "VB-CABLE-Treiber installieren (aus vbcable-Ordner)",
-            "Instalar controlador VB-CABLE (desde carpeta vbcable)",
-            "Installer pilote VB-CABLE (depuis dossier vbcable)",
-            "安装 VB-CABLE 驱动 (从 vbcable 文件夹)",
-            "VB-CABLE ドライバーをインストール (vbcable フォルダより)",
-            "VB-CABLE 드라이버 설치 (vbcable 폴더에서)");
+        ApoLabel.Text = Loc.ApoInterception;
+        ApoDescText.Text = Loc.ApoDesc;
+        InstallApoBtnText.Text = Loc.InstallApo;
+        UninstallApoBtnText.Text = Loc.UninstallApo;
         RefreshBtnText.Text = Loc.Refresh;
         ParGroup.Header = Loc.SetParams;
         LangGroup.Header = Loc.SetLang;
@@ -90,6 +82,7 @@ public partial class SettingsWindow : Window
         AppDescText.Text = Loc.SetAboutDesc;
         CancelBtn.Content = Loc.Cancel;
         OkBtn.Content = Loc.Ok;
+        UpdateApoStatus();
     }
 
     private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
@@ -125,7 +118,6 @@ public partial class SettingsWindow : Window
         }
         ApplyLang();
         UpdateParamLabels();
-        UpdateVirtMic();
     }
 
     private void UpdateParamLabels()
@@ -137,13 +129,10 @@ public partial class SettingsWindow : Window
     private void RefreshLists()
     {
         string? i = (InputBox.SelectedItem as OspDevice)?.Id;
-        string? c = (CableBox.SelectedItem as OspDevice)?.Id;
         string? m = (MonitorBox.SelectedItem as OspDevice)?.Id;
         InputBox.ItemsSource = OspEngine.GetInputMicrophones();
-        CableBox.ItemsSource = OspEngine.GetVirtualCables();
         MonitorBox.ItemsSource = OspEngine.GetOutputDevices();
         SelectById(InputBox, i);
-        SelectById(CableBox, c);
         SelectById(MonitorBox, m);
     }
 
@@ -155,38 +144,54 @@ public partial class SettingsWindow : Window
         if (box.SelectedIndex < 0 && box.Items.Count > 0) box.SelectedIndex = 0;
     }
 
-    private void UpdateVirtMic()
+    private void UpdateApoStatus()
     {
-        bool hasCable = OspEngine.HasVirtualCable();
-        InstallCableBtn.Visibility = !hasCable ? Visibility.Visible : Visibility.Collapsed;
-        VirtMicText.Text = CableBox.SelectedItem is OspDevice dev
-            ? OspEngine.FindVirtualMicName(dev.Name)
-            : Loc.NoCable;
+        string? micId = (InputBox.SelectedItem as OspDevice)?.Id;
+        bool isInstalled = !string.IsNullOrEmpty(micId) && OspApoManager.IsApoInstalledOnEndpoint(micId);
+
+        if (isInstalled)
+        {
+            ApoStatusBadge.Text = Loc.ApoActive;
+            ApoStatusBadge.Foreground = (Brush)FindResource("AccentGreen");
+            InstallApoBtn.Visibility = Visibility.Collapsed;
+            UninstallApoBtn.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            ApoStatusBadge.Text = Loc.ApoNotInstalled;
+            ApoStatusBadge.Foreground = (Brush)FindResource("TextMuted");
+            InstallApoBtn.Visibility = Visibility.Visible;
+            UninstallApoBtn.Visibility = Visibility.Collapsed;
+        }
     }
 
-    private void InstallCableBtn_Click(object sender, RoutedEventArgs e)
+    private void InstallApoBtn_Click(object sender, RoutedEventArgs e)
     {
-        try
+        string? micId = (InputBox.SelectedItem as OspDevice)?.Id;
+        if (string.IsNullOrWhiteSpace(micId)) return;
+
+        bool ok = OspApoManager.InstallApoOnEndpoint(micId);
+        UpdateApoStatus();
+        if (ok)
         {
-            string baseDir = Path.GetDirectoryName(Environment.ProcessPath) ?? AppDomain.CurrentDomain.BaseDirectory;
-            string cableDir = Path.Combine(baseDir, "vbcable");
-            string setupExe = Path.Combine(cableDir, "VBCABLE_Setup_x64.exe");
-            if (File.Exists(setupExe))
-            {
-                Process.Start(new ProcessStartInfo(setupExe) { UseShellExecute = true, Verb = "runas" });
-            }
-            else if (Directory.Exists(cableDir))
-            {
-                Process.Start(new ProcessStartInfo("explorer.exe", cableDir) { UseShellExecute = true });
-            }
-            else
-            {
-                Process.Start(new ProcessStartInfo("https://vb-audio.com/Cable/") { UseShellExecute = true });
-            }
+            MessageBox.Show(Loc.ApoStatusSuccess, "OpenSoundPad", MessageBoxButton.OK, MessageBoxImage.Information);
         }
-        catch (Exception ex)
+        else
         {
-            MessageBox.Show(ex.Message, "OSP", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(Loc.ApoStatusFailed, "OpenSoundPad", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private void UninstallApoBtn_Click(object sender, RoutedEventArgs e)
+    {
+        string? micId = (InputBox.SelectedItem as OspDevice)?.Id;
+        if (string.IsNullOrWhiteSpace(micId)) return;
+
+        bool ok = OspApoManager.UninstallApoFromEndpoint(micId);
+        UpdateApoStatus();
+        if (ok)
+        {
+            MessageBox.Show(Loc.ApoStatusSuccess, "OpenSoundPad", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 
@@ -194,7 +199,7 @@ public partial class SettingsWindow : Window
     {
         RefreshLists();
         ApplyLang();
-        UpdateVirtMic();
+        UpdateApoStatus();
     }
 
     private void OpenFolder_Click(object sender, RoutedEventArgs e)
@@ -228,9 +233,8 @@ public partial class SettingsWindow : Window
         _config.Save();
         RefreshLists();
         SelectById(InputBox, null);
-        SelectById(CableBox, null);
         SelectById(MonitorBox, null);
-        UpdateVirtMic();
+        UpdateApoStatus();
         PregainSlider.Value = _config.InputPregain * 100;
         GateSlider.Value = _config.GateThreshold * 10000;
     }
@@ -245,7 +249,7 @@ public partial class SettingsWindow : Window
     private void Ok_Click(object sender, RoutedEventArgs e)
     {
         SelectedInputId = (InputBox.SelectedItem as OspDevice)?.Id;
-        SelectedOutputId = (CableBox.SelectedItem as OspDevice)?.Id;
+        SelectedOutputId = null;
         SelectedMonitorId = (MonitorBox.SelectedItem as OspDevice)?.Id;
         _config.InputDeviceId = SelectedInputId;
         _config.OutputDeviceId = SelectedOutputId;

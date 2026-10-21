@@ -187,13 +187,10 @@
                                 </DockPanel>
                                 <TextBlock x:Name="DevMicTitle" Text="Микрофон:" Foreground="{StaticResource TextSubtle}" FontSize="10"/>
                                 <TextBlock x:Name="InputDevText" Text="—" Foreground="{StaticResource TextPrimary}" FontSize="11" Margin="0,0,0,3" TextTrimming="CharacterEllipsis"/>
-                                <TextBlock x:Name="DevCableTitle" Text="Виртуальный кабель:" Foreground="{StaticResource TextSubtle}" FontSize="10"/>
-                                <TextBlock x:Name="CableDevText" Text="—" Foreground="{StaticResource TextPrimary}" FontSize="11" Margin="0,0,0,3" TextTrimming="CharacterEllipsis"/>
-                                <TextBlock x:Name="DevMonTitle" Text="Монитор:" Foreground="{StaticResource TextSubtle}" FontSize="10"/>
+                                <TextBlock x:Name="DevApoTitle" Text="Перехват микрофона (APO):" Foreground="{StaticResource TextSubtle}" FontSize="10"/>
+                                <TextBlock x:Name="ApoStatusText" Text="—" Foreground="{StaticResource AccentGreen}" FontWeight="SemiBold" FontSize="11" Margin="0,0,0,3" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock x:Name="DevMonTitle" Text="Монитор (наушники):" Foreground="{StaticResource TextSubtle}" FontSize="10"/>
                                 <TextBlock x:Name="MonitorDevText" Text="—" Foreground="{StaticResource TextPrimary}" FontSize="11" Margin="0,0,0,3" TextTrimming="CharacterEllipsis"/>
-                                <TextBlock x:Name="VirtMicHeader" Text="Микрофон в Discord/играх:" Foreground="{StaticResource TextSubtle}" FontSize="10"/>
-                                <TextBlock x:Name="VirtMicText" Text="—" Foreground="{StaticResource AccentGreen}" FontWeight="SemiBold" FontSize="11" TextTrimming="CharacterEllipsis"/>
-                                <TextBlock x:Name="CableHint" Visibility="Collapsed" Text=""/>
                             </StackPanel>
                         </Border>
 
@@ -544,11 +541,7 @@
                 </DockPanel>
             </GroupBox>
 
-            <!-- Невидимые совместимые привязки для вывода кабеля в саундпаде (MainWindow.xaml.cs совместимость) -->
-            <StackPanel Visibility="Collapsed">
-                <TextBlock x:Name="CableDevText2"/>
-                <TextBlock x:Name="VirtMicText2"/>
-            </StackPanel>
+
         </Grid>
 
         <!-- Статусбар (True Black) -->

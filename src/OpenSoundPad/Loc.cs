@@ -43,14 +43,14 @@ public static class Loc
     public static string MenuHelp => T("Справка", "Help", "Hilfe", "Ayuda", "Aide", "帮助", "ヘルプ", "도움말");
     public static string MenuAbout => T("О программе", "About", "Über", "Acerca de", "À propos", "关于", "バージョン情報", "정보");
     public static string AboutText => T(
-        "OSP OpenSoundPad\nВойсчейнджер + саундпад.\nВывод: виртуальный кабель (VB-CABLE / Animaze / Voicemod).",
-        "OSP OpenSoundPad\nVoice changer + soundpad.\nOutput: virtual cable (VB-CABLE / Animaze / Voicemod).",
-        "OSP OpenSoundPad\nStimmenverzerrer + Soundpad.\nAusgang: virtuelles Kabel (VB-CABLE / Animaze / Voicemod).",
-        "OSP OpenSoundPad\nCambiador de voz + soundpad.\nSalida: cable virtual (VB-CABLE / Animaze / Voicemod).",
-        "OSP OpenSoundPad\nModificateur de voix + soundpad.\nSortie : câble virtuel (VB-CABLE / Animaze / Voicemod).",
-        "OSP OpenSoundPad\n变声器 + 声音板。\n输出: 虚拟音频线 (VB-CABLE / Animaze / Voicemod)。",
-        "OSP OpenSoundPad\nボイスチェンジャー + サウンドパッド。\n出力: 仮想オーディオケーブル (VB-CABLE / Animaze / Voicemod)。",
-        "OSP OpenSoundPad\n보이스 체인저 + 사운드패드.\n출력: 가상 오디오 케이블 (VB-CABLE / Animaze / Voicemod)。");
+        "OSP OpenSoundPad\nВойсчейнджер + саундпад.\nПрямой перехват микрофона Windows (APO driver extension) без виртуальных кабелей.",
+        "OSP OpenSoundPad\nVoice changer + soundpad.\nDirect Windows microphone interception (APO driver extension) — no virtual cables needed.",
+        "OSP OpenSoundPad\nStimmenverzerrer + Soundpad.\nDirekte Windows-Mikrofonabfangung (APO-Treibererweiterung) ohne virtuelle Kabel.",
+        "OSP OpenSoundPad\nCambiador de voz + soundpad.\nIntercepción directa de micrófono en Windows (extensión APO) sin cables virtuales.",
+        "OSP OpenSoundPad\nModificateur de voix + soundpad.\nInterception directe du microphone Windows (extension APO) sans câbles virtuels.",
+        "OSP OpenSoundPad\n变声器 + 声音板。\nWindows 麦克风直接底层拦截 (APO 驱动扩展)，无需任何虚拟音频线。",
+        "OSP OpenSoundPad\nボイスチェンジャー + サウンドパッド。\nWindows マイク直接傍受 (APO ドライバー拡張)、仮想ケーブル不要。",
+        "OSP OpenSoundPad\n보이스 체인저 + 사운드패드.\nWindows 마이크 직접 가로채기 (APO 드라이버 확장), 가상 케이블 불필요.");
 
     // Режимы
     public static string ModeVoice => T("Войсмод", "Voice Changer", "Stimmenverzerrer", "Cambiador de voz", "Modificateur de voix", "变声器", "ボイスチェンジャー", "보이스 체인저");
@@ -66,7 +66,7 @@ public static class Loc
     public static string EnterNewName => T("Введите новое название для звука:", "Enter new sound name:", "Geben Sie einen neuen Soundnamen ein:", "Introduce el nuevo nombre del sonido:", "Entrez le nouveau nom du son :", "输入声音的新名称:", "サウンドの新しい名前を入力してください:", "새 사운드 이름을 입력하세요:");
     public static string PadVolumeTitle => T("ГРОМКОСТЬ", "PAD VOLUME", "PAD-LAUTSTÄRKE", "VOLUMEN DE PADS", "VOLUME DU PAD", "声音板音量", "パッド音量", "패드 볼륨");
     public static string PlayingCount(int count) => T($"Играет: {count}", $"Active: {count}", $"Aktiv: {count}", $"Activos: {count}", $"Actifs : {count}", $"播放中: {count}", $"再生中: {count}", $"재생 중: {count}");
-    public static string SoundpadRouting => T("Трансляция в кабель:", "Routing to Cable:", "Übertragung an Kabel:", "Enrutamiento al cable:", "Routage vers le câble :", "输出至虚拟线缆:", "仮想ケーブルへのルーティング:", "가상 케이블로 라우팅:");
+    public static string SoundpadRouting => T("Трансляция в микрофон:", "Routing to Microphone:", "Übertragung an Mikrofon:", "Enrutamiento al micrófono:", "Routage vers le microphone :", "输出至麦克风:", "マイクへのルーティング:", "마이크로 라우팅:");
     public static string SoundpadHint => T(
         "Правый клик по треку: удалить / переименовать • Перетащите файлы сюда или нажмите «+ Добавить звук»",
         "Right-click track to remove / rename • Drag files here or click «+ Add sound»",
@@ -186,17 +186,22 @@ public static class Loc
     // Уровни и устройства
     public static string LevelIn => T("ВХОД МИКРОФОНА", "INPUT (MIC)", "EINGANG (MIKROFON)", "ENTRADA (MIC)", "ENTRÉE (MIC)", "输入 (麦克风)", "入力 (マイク)", "입력 (마이크)");
     public static string LevelOut => T("ВЫХОД В ЭФИР (ОБРАБОТКА + ПАДЫ)", "OUTPUT (MOD + PADS)", "AUSGANG (MOD + PADS)", "SALIDA (MOD + PADS)", "SORTIE (MOD + PADS)", "输出 (变声 + 声音板)", "出力 (変調 + パッド)", "출력 (변조 + 패드)");
-    public static string VirtMic => T("Микрофон в системе (для Discord/CS):", "System mic (for Discord/CS):", "Systemmikrofon (für Discord/Spiele):", "Micrófono del sistema (Discord/juegos):", "Micro système (pour Discord/jeux) :", "系统虚拟麦克风 (在 Discord/游戏 中选择):", "システムマイク (Discord/ゲームで選択):", "시스템 가상 마이크 (Discord/게임에서 선택):");
-    public static string NoCable => T("Кабель не выбран — в Discord нечего выводить", "Cable not selected — nothing to output", "Kein Kabel gewählt — keine Ausgabe", "Cable no seleccionado — nada que emitir", "Câble non sélectionné — aucune sortie", "未选择虚拟音频线 — 无法输出到 Discord", "ケーブル未選択 — Discordへの出力なし", "케이블 미선택 — Discord로 출력 불가");
-    public static string CableHint => T(
-        "Если кабеля нет в списке — установите VB-CABLE и выберите его в настройках.",
-        "If no cable in list — install VB-CABLE, then pick it in Settings.",
-        "Falls kein Kabel vorhanden: VB-CABLE installieren und in Einstellungen wählen.",
-        "Si no hay cable en la lista: instala VB-CABLE y elígelo en Configuración.",
-        "Si aucun câble : installez VB-CABLE et sélectionnez-le dans les Paramètres.",
-        "如果列表中没有音频线 — 请安装 VB-CABLE 并在设置中选择。",
-        "リストにケーブルがない場合 — VB-CABLEをインストールして設定で選択してください。",
-        "목록에 케이블이 없는 경우 — VB-CABLE을 설치하고 설정에서 선택하세요.");
+    public static string ApoInterception => T("Перехват микрофона (APO):", "Microphone Interception (APO):", "Mikrofon-Abfangung (APO):", "Intercepción de micrófono (APO):", "Interception du micro (APO) :", "麦克风底层拦截 (APO):", "マイク傍受 (APO):", "마이크 가로채기 (APO):");
+    public static string ApoActive => T("Установлен и активен", "Installed and active", "Installiert und aktiv", "Instalado y activo", "Installé et actif", "已安装且生效", "インストール済み・有効", "설치됨 및 활성화");
+    public static string ApoNotInstalled => T("Не установлен (нажмите Установить)", "Not installed (click Install)", "Nicht installiert (Klicken Sie auf Installieren)", "No instalado (clic en Instalar)", "Non installé (cliquez Installer)", "未安装 (点击安装)", "未インストール (インストールをクリック)", "미설치 (설치 클릭)");
+    public static string InstallApo => T("Установить перехват", "Install Interception", "Abfangung installieren", "Instalar intercepción", "Installer l'interception", "安装底层拦截", "傍受をインストール", "가로채기 설치");
+    public static string UninstallApo => T("Удалить перехват", "Uninstall Interception", "Abfangung deinstallieren", "Desinstalar intercepción", "Désinstaller l'interception", "卸载底层拦截", "傍受を削除", "가로채기 삭제");
+    public static string ApoStatusSuccess => T("Перехват микрофона успешно обновлён!", "Microphone interception updated successfully!", "Mikrofon-Abfangung erfolgreich aktualisiert!", "¡Intercepción de micrófono actualizada correctamente!", "Interception du micro mise à jour avec succès !", "麦克风拦截配置更新成功！", "マイク傍受設定が正常に更新されました！", "마이크 가로채기 설정이 성공적으로 업데이트되었습니다!");
+    public static string ApoStatusFailed => T("Не удалось применить настройки APO.", "Failed to configure APO interception.", "Fehler beim Konfigurieren der APO-Abfangung.", "Error al configurar la intercepción APO.", "Échec de la configuration de l'APO.", "配置 APO 拦截失败。", "APO 傍受の設定に失敗しました。", "APO 가로채기 설정에 실패했습니다.");
+    public static string ApoDesc => T(
+        "OpenSoundPad перехватывает выбранный микрофон напрямую в Windows (APO). Discord, игры и любые программы слышат звук прямо из обычного микрофона без сторонних виртуальных кабелей.",
+        "OpenSoundPad intercepts the selected microphone directly in Windows (APO). Discord, games, and apps hear your audio straight through your normal microphone without virtual cables.",
+        "OpenSoundPad fängt das ausgewählte Mikrofon direkt in Windows (APO) ab. Discord, Spiele und Apps hören den Ton direkt über Ihr normales Mikrofon ohne virtuelle Kabel.",
+        "OpenSoundPad intercepta el micrófono seleccionado directamente en Windows (APO). Discord, juegos y aplicaciones reciben tu audio directamente a través de tu micrófono normal sin cables virtuales.",
+        "OpenSoundPad intercepte le microphone sélectionné directement dans Windows (APO). Discord, les jeux et toutes vos applications reçoivent le son directement via votre micro sans câble virtuel.",
+        "OpenSoundPad 在 Windows 底层 (APO) 直接拦截选定的麦克风。Discord、游戏和应用直接通过普通麦克风获取声音，无需虚拟音频线。",
+        "OpenSoundPad は Windows の最下層 (APO) で選択したマイクを直接傍受します。Discordやゲームなどは仮想ケーブル不要で通常のマイクから直接エフェクト音声を受け取ります。",
+        "OpenSoundPad는 Windows 최하단(APO)에서 선택한 마이크를 직접 가로챕니다. Discord, 게임 등은 가상 케이블 없이 일반 마이크로 변조된 음성과 사운드를 직접 수신합니다.");
     public static string ActiveDevices => T("Текущие устройства", "Active Devices", "Aktive Geräte", "Dispositivos activos", "Périphériques actifs", "当前设备", "現在のデバイス", "현재 장치");
     public static string SetDevicesBtn => T("Настроить устройства…", "Configure Devices…", "Geräte konfigurieren…", "Configurar dispositivos…", "Configurer périphériques…", "配置设备…", "デバイス設定…", "장치 설정…");
     public static string MasterVolume(int v) => T($"Громкость микрофона: {v}%", $"Master mic volume: {v}%", $"Haupt-Mikrofonlautstärke: {v}%", $"Volumen de micrófono: {v}%", $"Volume du micro : {v}%", $"麦克风主音量: {v}%", $"マスターマイク音量: {v}%", $"마이크 마스터 볼륨: {v}%");
@@ -210,24 +215,24 @@ public static class Loc
 
     // Статус
     public static string Stopped => T("Остановлен", "Stopped", "Gestoppt", "Detenido", "Arrêté", "已停止", "停止中", "정지됨");
-    public static string Live(string inp, string cable, string voice) => T(
-        $"В эфире: {inp} → {cable} • {voice}",
-        $"Live: {inp} → {cable} • {voice}",
-        $"Live: {inp} → {cable} • {voice}",
-        $"En vivo: {inp} → {cable} • {voice}",
-        $"En direct : {inp} → {cable} • {voice}",
-        $"已就绪: {inp} → {cable} • {voice}",
-        $"配信中: {inp} → {cable} • {voice}",
-        $"온에어: {inp} → {cable} • {voice}");
+    public static string Live(string inp, string voice) => T(
+        $"В эфире: {inp} (APO) • {voice}",
+        $"Live: {inp} (APO) • {voice}",
+        $"Live: {inp} (APO) • {voice}",
+        $"En vivo: {inp} (APO) • {voice}",
+        $"En direct : {inp} (APO) • {voice}",
+        $"已就绪: {inp} (APO) • {voice}",
+        $"配信中: {inp} (APO) • {voice}",
+        $"온에어: {inp} (APO) • {voice}");
     public static string NeedDevices => T(
-        "Выберите микрофон и виртуальный кабель (Настройки).",
-        "Pick a microphone and a virtual cable (Settings).",
-        "Wählen Sie ein Mikrofon und virtuelles Kabel (Einstellungen).",
-        "Elige un micrófono y cable virtual (Configuración).",
-        "Choisissez un micro et câble virtuel (Paramètres).",
-        "请选择麦克风和虚拟音频线 (设置)。",
-        "マイクと仮想ケーブルを選択してください (設定)。",
-        "마이크와 가상 케이블을 선택하세요 (설정).");
+        "Выберите микрофон (Настройки).",
+        "Pick a microphone (Settings).",
+        "Wählen Sie ein Mikrofon (Einstellungen).",
+        "Elige un micrófono (Configuración).",
+        "Choisissez un micro (Paramètres).",
+        "请选择麦克风 (设置)。",
+        "マイクを選択してください (設定)。",
+        "마이크를 선택하세요 (설정).");
     public static string StartFailed => T("Не удалось запустить звук: ", "Could not start audio: ", "Audiowiedergabe konnte nicht gestartet werden: ", "No se pudo iniciar el audio: ", "Impossible de démarrer l'audio : ", "无法启动音频: ", "オーディオを開始できませんでした: ", "오디오를 시작할 수 없습니다: ");
 
     // Настройки
@@ -266,14 +271,14 @@ public static class Loc
         "모든 설정(음성, 볼륨, 장치)을 초기화하시겠습니까?\n사운드 파일은 유지됩니다.");
     public static string SetAbout => T("О приложении", "About OpenSoundPad", "Über OpenSoundPad", "Acerca de OpenSoundPad", "À propos d'OpenSoundPad", "关于 OpenSoundPad", "OpenSoundPad について", "OpenSoundPad 정보");
     public static string SetAboutDesc => T(
-        "Голосовой модулятор реального времени и саундпад с выводом в виртуальный микрофон Windows.",
-        "Real-time voice changer and soundpad with direct routing to Windows virtual microphone.",
-        "Echtzeit-Stimmenverzerrer und Soundpad mit Routing zum virtuellen Windows-Mikrofon.",
-        "Modulador de voz en tiempo real y soundpad con enrutamiento al micrófono virtual de Windows.",
-        "Modulateur vocal en temps réel et soundpad avec routage vers micro virtuel Windows.",
-        "实时变声器与声音板，可直接路由至 Windows 虚拟麦克风。",
-        "Windows仮想マイクにルーティング可能なリアルタイムボイスチェンジャー＆サウンドパッド。",
-        "Windows 가상 마이크로 직접 라우팅되는 실시간 보이스 체인저 및 사운드패드.");
+        "Голосовой модулятор реального времени и саундпад с прямым перехватом микрофона Windows (APO).",
+        "Real-time voice changer and soundpad with direct Windows microphone interception (APO).",
+        "Echtzeit-Stimmenverzerrer und Soundpad mit direkter Windows-Mikrofonabfangung (APO).",
+        "Modulador de voz en tiempo real y soundpad con intercepción directa de micrófono en Windows (APO).",
+        "Modulateur vocal en temps réel et soundpad avec interception directe du microphone Windows (APO).",
+        "实时变声器与声音板，采用 Windows 麦克风直接底层拦截 (APO)。",
+        "Windows マイク直接傍受 (APO) を採用したリアルタイムボイスチェンジャー＆サウンドパッド。",
+        "Windows 마이크 직접 가로채기(APO)를 적용한 실시간 보이스 체인저 및 사운드패드.");
     public static string Ok => T("OK", "OK", "OK", "Aceptar", "Valider", "确定", "OK", "확인");
     public static string Cancel => T("Отмена", "Cancel", "Abbrechen", "Cancelar", "Annuler", "取消", "キャンセル", "취소");
 

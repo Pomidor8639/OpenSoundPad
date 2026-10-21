@@ -158,11 +158,9 @@ public partial class MainWindow : Window
         LevelOutLabel.Text = Loc.LevelOut;
         ActiveDevHeader.Text = Loc.ActiveDevices + ":";
         DevMicTitle.Text = Loc.SetMic;
-        DevCableTitle.Text = Loc.SetCable;
+        DevApoTitle.Text = Loc.ApoInterception;
         DevMonTitle.Text = Loc.SetMonitor;
         OpenSettingsBtnText.Text = Loc.SetDevicesBtn;
-        VirtMicHeader.Text = Loc.VirtMic;
-        CableHint.Text = Loc.CableHint;
 
         if (!_engine.IsRunning) StatusText.Text = Loc.Stopped;
         UpdateLabels();
@@ -680,19 +678,16 @@ public partial class MainWindow : Window
     private void UpdateDeviceDisplay()
     {
         string? inDev = FindDeviceName(OspEngine.GetInputMicrophones(), _config.InputDeviceId);
-        string? cableDev = FindDeviceName(OspEngine.GetVirtualCables(), _config.OutputDeviceId);
         string? monDev = FindDeviceName(OspEngine.GetOutputDevices(), _config.MonitorDeviceId);
 
         InputDevText.Text = inDev ?? Loc.NotSelected;
-        CableDevText.Text = cableDev ?? Loc.NotSelected;
-        CableDevText2.Text = cableDev ?? Loc.NotSelected;
         MonitorDevText.Text = monDev ?? Loc.MonitorOff;
 
-        string virtText = cableDev != null
-            ? OspEngine.FindVirtualMicName(cableDev)
-            : Loc.NoCable;
-        VirtMicText.Text = virtText;
-        VirtMicText2.Text = virtText;
+        bool isApo = !string.IsNullOrEmpty(_config.InputDeviceId) && Audio.OspApoManager.IsApoInstalledOnEndpoint(_config.InputDeviceId);
+        ApoStatusText.Text = isApo ? Loc.ApoActive : Loc.ApoNotInstalled;
+        ApoStatusText.Foreground = isApo
+            ? (Brush)FindResource("AccentGreen")
+            : (Brush)FindResource("TextMuted");
     }
 
     // ---------- меню и тулбар ----------
@@ -820,23 +815,20 @@ public partial class MainWindow : Window
     {
         try
         {
-            if (_config.InputDeviceId == null || _config.OutputDeviceId == null)
+            if (_config.InputDeviceId == null)
             {
                 var inList = OspEngine.GetInputMicrophones();
-                var outList = OspEngine.GetVirtualCables();
-                if (_config.InputDeviceId == null && inList.Count > 0)
+                if (inList.Count > 0)
                     _config.InputDeviceId = inList[0].Id;
-                if (_config.OutputDeviceId == null && outList.Count > 0)
-                    _config.OutputDeviceId = outList[0].Id;
 
-                if (_config.InputDeviceId == null || _config.OutputDeviceId == null)
+                if (_config.InputDeviceId == null)
                 {
                     MessageBox.Show(Loc.NeedDevices, "OSP", MessageBoxButton.OK, MessageBoxImage.Warning);
                     OpenSettings();
-                    if (_config.InputDeviceId == null || _config.OutputDeviceId == null) return;
+                    if (_config.InputDeviceId == null) return;
                 }
             }
-            _engine.SetDevices(_config.InputDeviceId, _config.OutputDeviceId, _config.MonitorDeviceId);
+            _engine.SetDevices(_config.InputDeviceId, _config.MonitorDeviceId);
 
             _engine.Dsp.VolumeGain = (float)(VolumeKnob.Value / 100.0);
             _engine.Dsp.InputPregain = _config.InputPregain;
@@ -855,10 +847,9 @@ public partial class MainWindow : Window
             _engine.Dsp.GateThreshold = _config.GateThreshold;
 
             string inName = FindDeviceName(OspEngine.GetInputMicrophones(), _config.InputDeviceId) ?? "?";
-            string outName = FindDeviceName(OspEngine.GetVirtualCables(), _config.OutputDeviceId) ?? "?";
             TbStart.IsEnabled = false;
             TbStop.IsEnabled = true;
-            StatusText.Text = Loc.Live(inName, outName, Loc.VoiceName(SelectedVoice()));
+            StatusText.Text = Loc.Live(inName, Loc.VoiceName(SelectedVoice()));
             UpdateDeviceDisplay();
             UpdateStatusBadge();
         }

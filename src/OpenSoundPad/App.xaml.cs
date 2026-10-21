@@ -10,6 +10,22 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        if (e.Args.Length >= 2)
+        {
+            if (e.Args[0] == "--install-apo")
+            {
+                bool ok = Audio.OspApoManager.InstallApoOnEndpoint(e.Args[1]);
+                Environment.Exit(ok ? 0 : 1);
+                return;
+            }
+            if (e.Args[0] == "--uninstall-apo")
+            {
+                bool ok = Audio.OspApoManager.UninstallApoFromEndpoint(e.Args[1]);
+                Environment.Exit(ok ? 0 : 1);
+                return;
+            }
+        }
+
         DispatcherUnhandledException += OnDispatcherUnhandledException;
         AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
